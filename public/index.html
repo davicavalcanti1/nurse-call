@@ -62,8 +62,8 @@
 
   /* ── GRADE CENTRAL ── */
   #pg-central.ativo { display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
     gap: 2px; background: var(--border); overflow: hidden; }
 
   /* ── CARD ── */
@@ -265,7 +265,7 @@
 
 <script>
 // ── Quartos ──────────────────────────────────────────────────────────────────
-const QUARTOS = Array.from({ length: 20 }, (_, i) => ({
+const QUARTOS = Array.from({ length: 100 }, (_, i) => ({
   id:   `quarto-${String(i + 1).padStart(2, '0')}`,
   nome: `Quarto ${String(i + 1).padStart(2, '0')}`
 }));
