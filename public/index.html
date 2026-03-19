@@ -130,17 +130,23 @@
   .btn-atender:hover { opacity: .8; }
 
   /* ── ALERTA ATIVO ── */
-  .card.alerta { background: color-mix(in srgb, var(--ac) 18%, #fff); }
-  .card.alerta::before { background: var(--ac); }
+  .card.alerta { background: var(--ac) !important; }
+  .card.alerta::before { background: rgba(0,0,0,.25); }
   .card.alerta .led {
-    background: var(--ac); box-shadow: 0 0 7px var(--ac);
-    border-color: color-mix(in srgb, var(--ac) 60%, #fff);
+    background: #fff; box-shadow: 0 0 8px #fff;
+    border-color: rgba(255,255,255,.6);
     animation: piscar .5s infinite;
   }
-  .card.alerta .card-nome { color: color-mix(in srgb, var(--ac) 70%, #000); }
+  .card.alerta .card-nome    { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  .card.alerta .card-icone   { filter: brightness(0) invert(1); }
+  .card.alerta .card-paciente { color: rgba(255,255,255,.9) !important; }
+  .card.alerta .card-tipo    { color: rgba(255,255,255,.95) !important; font-weight: 800; }
+  .card.alerta .card-hora    { color: rgba(255,255,255,.8) !important; }
+  .card.alerta .btn-atender  { background: rgba(0,0,0,.3); color: #fff; border: 1px solid rgba(255,255,255,.4); }
   .card.alerta::after { content: ''; position: absolute; inset: 0;
-    border: 2px solid var(--ac); border-radius: 3px;
-    pointer-events: none; animation: piscar .6s infinite; }
+    background: rgba(255,255,255,.15);
+    border-radius: 3px; pointer-events: none;
+    animation: piscar .5s infinite; }
 
   .card[data-tipo="chamada"]     { --ac: var(--chamada); }
   .card[data-tipo="atendimento"] { --ac: var(--atendimento); }
