@@ -8,171 +8,124 @@
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --verde:    #22c55e;
-    --vermelho: #ef4444;
-    --azul:     #38bdf8;
-    --fundo:    #0d1117;
+    --chamada:     #ef4444;
+    --atendimento: #f59e0b;
+    --apoio:       #3b82f6;
+    --verde:       #22c55e;
+    --bg:          #0d1117;
+    --surface:     #161b22;
   }
 
-  html, body {
-    height: 100%;
-    background: var(--fundo);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    color: #e6edf3;
-    overflow: hidden;
-  }
+  html, body { height: 100%; background: var(--bg);
+    font-family: 'Segoe UI', system-ui, sans-serif; color: #e6edf3; overflow: hidden; }
 
   .tela {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    padding: 24px;
-    text-align: center;
-    transition: background 0.4s;
+    height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; padding: 24px; text-align: center;
   }
 
-  /* ── Cabeçalho ── */
-  .nome-sala {
-    font-size: clamp(1.4rem, 5vw, 2.2rem);
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #e6edf3;
+  .nome-sala { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase; }
+  .sub { font-size: .8rem; color: #8b949e; letter-spacing: 1px; }
+
+  /* ── Botões de chamada ── */
+  .botoes { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 380px; }
+
+  .btn-tipo {
+    padding: clamp(18px, 4vw, 26px) 20px;
+    font-size: clamp(1rem, 3.5vw, 1.3rem);
+    font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+    border: none; border-radius: 14px; cursor: pointer;
+    transition: transform .15s, box-shadow .2s, opacity .2s;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
   }
+  .btn-tipo:active { transform: scale(.96); }
+  .btn-tipo:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
 
-  .sub {
-    font-size: clamp(0.75rem, 2vw, 0.9rem);
-    color: #8b949e;
-    letter-spacing: 1px;
-  }
+  .btn-chamada     { background: var(--chamada);     color: #fff; box-shadow: 0 0 24px #ef444444; }
+  .btn-atendimento { background: var(--atendimento); color: #000; box-shadow: 0 0 24px #f59e0b44; }
+  .btn-apoio       { background: var(--apoio);       color: #fff; box-shadow: 0 0 24px #3b82f644; }
 
-  /* ── Ícone central ── */
-  .icone {
-    font-size: clamp(4rem, 15vw, 7rem);
-    line-height: 1;
-    transition: all 0.3s;
-  }
+  .btn-tipo:not(:disabled):hover { filter: brightness(1.1); }
 
-  /* ── Botão CHAMAR ── */
-  .btn-chamar {
-    padding: clamp(20px, 5vw, 32px) clamp(40px, 10vw, 80px);
-    font-size: clamp(1.1rem, 4vw, 1.6rem);
-    font-weight: 800;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    border: none;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: transform 0.15s, opacity 0.2s, box-shadow 0.2s;
-    background: var(--vermelho);
-    color: #fff;
-    box-shadow: 0 0 30px #ef444455;
-  }
-
-  .btn-chamar:active { transform: scale(0.96); }
-  .btn-chamar:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  /* ── Estado: aguardando ── */
-  .tela.chamando { background: #1a0505; }
-
-  .tela.chamando .btn-chamar {
-    background: #7f1d1d;
-    box-shadow: none;
+  /* ── Estado aguardando ── */
+  .tela.chamando .btn-tipo { opacity: .3; }
+  .tela.chamando .btn-ativo {
+    opacity: 1 !important;
     animation: pulso 1.2s infinite;
   }
-
   @keyframes pulso {
-    0%, 100% { box-shadow: 0 0 0px #ef444400; }
-    50%       { box-shadow: 0 0 30px #ef444466; }
+    0%,100% { box-shadow: 0 0 8px transparent; }
+    50%      { box-shadow: 0 0 30px var(--cor-ativa); }
   }
 
-  /* ── Estado: atendido ── */
+  .msg-aguardando {
+    display: none; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .tela.chamando .msg-aguardando { display: flex; }
+
+  .aguardando-txt { font-size: .85rem; color: #8b949e; letter-spacing: 1px; }
+  .tipo-ativo-txt { font-size: 1rem; font-weight: 700; }
+
+  /* ── Estado atendido ── */
   .tela.atendido { background: #052010; }
-
   .msg-atendido {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    animation: entrar 0.5s ease;
+    display: none; flex-direction: column; align-items: center; gap: 16px;
+    animation: entrar .5s ease;
   }
+  .tela.atendido .msg-atendido  { display: flex; }
+  .tela.atendido .bloco-chamada { display: none; }
 
-  @keyframes entrar {
-    from { opacity: 0; transform: scale(0.9); }
-    to   { opacity: 1; transform: scale(1); }
-  }
+  @keyframes entrar { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:none; } }
 
-  .tela.atendido .msg-atendido { display: flex; }
-  .tela.atendido .bloco-chamar { display: none; }
+  .check { font-size: clamp(4rem,15vw,7rem); }
+  .atendido-txt  { font-size: clamp(1.4rem,5vw,2.2rem); font-weight: 800; color: var(--verde); letter-spacing: 2px; text-transform: uppercase; }
+  .atendido-sub  { font-size: .85rem; color: #6ee7b7; letter-spacing: 1px; }
 
-  .msg-atendido .titulo {
-    font-size: clamp(1.6rem, 6vw, 2.8rem);
-    font-weight: 800;
-    color: var(--verde);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
+  /* ── Paciente ── */
+  .paciente-nome { font-size: .9rem; color: #8b949e; min-height: 22px; letter-spacing: .5px; }
 
-  .msg-atendido .detalhe {
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
-    color: #6ee7b7;
-    letter-spacing: 1px;
-  }
-
-  .check {
-    font-size: clamp(4rem, 15vw, 7rem);
-    animation: bounce 0.6s ease;
-  }
-
-  @keyframes bounce {
-    0%   { transform: scale(0); }
-    60%  { transform: scale(1.2); }
-    100% { transform: scale(1); }
-  }
-
-  .conn-dot {
-    position: fixed;
-    bottom: 16px;
-    right: 16px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #374151;
-  }
+  /* ── Conexão ── */
+  .conn-dot { position: fixed; bottom: 14px; right: 14px; width: 10px; height: 10px;
+    border-radius: 50%; background: #374151; }
   .conn-dot.ok  { background: var(--verde); box-shadow: 0 0 6px var(--verde); }
-  .conn-dot.off { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+  .conn-dot.off { background: #f59e0b; }
 </style>
 </head>
 <body>
 
 <div class="tela" id="tela">
 
-  <!-- Nome da sala (preenchido pelo JS) -->
   <div>
-    <div class="nome-sala" id="nomeSala">Carregando...</div>
-    <div class="sub">Clique para chamar a enfermagem</div>
+    <div class="nome-sala" id="nomeSala">…</div>
+    <div class="paciente-nome" id="nomePaciente"></div>
+    <div class="sub">Selecione o tipo de chamado</div>
   </div>
 
-  <!-- Bloco principal: botão de chamada -->
-  <div class="bloco-chamar" id="blocoChamar">
-    <div class="icone" id="icone">🔔</div>
-    <br>
-    <button class="btn-chamar" id="btnChamar" onclick="chamar()">
-      Chamar Enfermagem
-    </button>
+  <!-- Botões -->
+  <div class="bloco-chamada" id="blocoChamada">
+    <div class="botoes">
+      <button class="btn-tipo btn-chamada"     id="btnChamada"
+        onclick="chamar('chamada')">🔴 Chamar Enfermagem</button>
+      <button class="btn-tipo btn-atendimento" id="btnAtendimento"
+        onclick="chamar('atendimento')">🟠 Atendimento</button>
+      <button class="btn-tipo btn-apoio"       id="btnApoio"
+        onclick="chamar('apoio')">🔵 Apoio</button>
+    </div>
   </div>
 
-  <!-- Mensagem de atendimento -->
-  <div class="msg-atendido" id="msgAtendido">
+  <!-- Aguardando -->
+  <div class="msg-aguardando">
+    <div class="tipo-ativo-txt" id="tipoAtivoTxt"></div>
+    <div class="aguardando-txt">Aguardando enfermeiro…</div>
+  </div>
+
+  <!-- Atendido -->
+  <div class="msg-atendido">
     <div class="check">✅</div>
-    <div class="titulo">Enfermeiro a caminho!</div>
-    <div class="detalhe">Aguarde, o enfermeiro já foi acionado.</div>
+    <div class="atendido-txt">Enfermeiro a caminho!</div>
+    <div class="atendido-sub">O enfermeiro já foi acionado. Aguarde.</div>
   </div>
 
 </div>
@@ -180,91 +133,96 @@
 <div class="conn-dot" id="connDot"></div>
 
 <script>
-  // ── ID da sala vem da URL: /sala/quarto-01 ────────────────────────────────
-  const roomId   = location.pathname.split('/').filter(Boolean).pop() || 'sala-desconhecida';
-  const nomeFormatado = roomId
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase());
+  const roomId = location.pathname.split('/').filter(Boolean).pop() || 'sala';
+  const nomeFormatado = roomId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   document.getElementById('nomeSala').textContent = nomeFormatado;
   document.title = nomeFormatado + ' — Enfermagem';
 
-  // ── Estados: idle | chamando | atendido ───────────────────────────────────
-  const tela       = document.getElementById('tela');
-  const btnChamar  = document.getElementById('btnChamar');
-  const icone      = document.getElementById('icone');
-  let   estado     = 'idle';
+  const TIPO_LABEL = {
+    chamada:     '🔴 Chamou Enfermagem',
+    atendimento: '🟠 Atendimento',
+    apoio:       '🔵 Apoio',
+  };
+  const TIPO_COR = {
+    chamada:     '#ef4444',
+    atendimento: '#f59e0b',
+    apoio:       '#3b82f6',
+  };
 
-  function setEstado(novo) {
+  const tela  = document.getElementById('tela');
+  let estado  = 'idle';
+  let tipoChamado = null;
+
+  function setEstado(novo, tipo) {
     estado = novo;
     tela.className = 'tela ' + (novo === 'idle' ? '' : novo);
 
+    ['btnChamada','btnAtendimento','btnApoio'].forEach(id => {
+      const btn = document.getElementById(id);
+      btn.disabled = novo !== 'idle';
+      btn.classList.remove('btn-ativo');
+    });
+
     if (novo === 'chamando') {
-      btnChamar.textContent = 'Aguardando...';
-      btnChamar.disabled = true;
-      icone.textContent = '🔴';
+      tipoChamado = tipo;
+      const mapa = { chamada: 'btnChamada', atendimento: 'btnAtendimento', apoio: 'btnApoio' };
+      const btn  = document.getElementById(mapa[tipo]);
+      btn.classList.add('btn-ativo');
+      btn.style.setProperty('--cor-ativa', TIPO_COR[tipo]);
+      document.getElementById('tipoAtivoTxt').textContent = TIPO_LABEL[tipo] || tipo;
     }
 
     if (novo === 'atendido') {
-      // Volta ao idle após 8 segundos
-      setTimeout(() => setEstado('idle'), 8000);
-    }
-
-    if (novo === 'idle') {
-      btnChamar.textContent = 'Chamar Enfermagem';
-      btnChamar.disabled = false;
-      icone.textContent = '🔔';
+      setTimeout(() => setEstado('idle'), 9000);
     }
   }
 
-  // ── Chamar ────────────────────────────────────────────────────────────────
-  function chamar() {
+  function chamar(tipo) {
     if (estado !== 'idle') return;
-    setEstado('chamando');
+    setEstado('chamando', tipo);
     fetch('/api/alert', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room: roomId })
+      body: JSON.stringify({ room: roomId, tipo })
     }).catch(() => setEstado('idle'));
   }
 
-  // ── WebSocket ─────────────────────────────────────────────────────────────
+  // ── WebSocket ──────────────────────────────────────────────────────────────
   const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
   const connDot = document.getElementById('connDot');
   let ws;
 
   function conectar() {
     ws = new WebSocket(WS_URL);
-
-    ws.onopen = () => connDot.className = 'conn-dot ok';
-
-    ws.onclose = () => {
-      connDot.className = 'conn-dot off';
-      setTimeout(conectar, 3000);
-    };
-
+    ws.onopen  = () => connDot.className = 'conn-dot ok';
+    ws.onclose = () => { connDot.className = 'conn-dot off'; setTimeout(conectar, 3000); };
     ws.onerror = () => ws.close();
 
     ws.onmessage = ({ data }) => {
       const msg = JSON.parse(data);
 
-      // Estado inicial ao conectar
       if (msg.type === 'init') {
-        if (msg.alertas[roomId]) setEstado('chamando');
+        // Paciente desta sala
+        const nome = (msg.pacientes || {})[roomId];
+        if (nome) document.getElementById('nomePaciente').textContent = nome;
+        // Chamado ativo
+        if ((msg.alertas || {})[roomId]) setEstado('chamando', msg.alertas[roomId].tipo);
       }
 
-      // Enfermeiro confirmou atendimento
+      if (msg.type === 'paciente' && msg.room === roomId) {
+        document.getElementById('nomePaciente').textContent = msg.nome || '';
+      }
+
       if (msg.type === 'atendido' && msg.room === roomId) {
         setEstado('atendido');
       }
 
-      // Chamado cancelado manualmente (sem ser pelo botão atender)
       if (msg.type === 'alerta' && msg.room === roomId && !msg.ativo && estado === 'chamando') {
         setEstado('idle');
       }
     };
   }
-
   conectar();
 </script>
 </body>

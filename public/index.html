@@ -3,336 +3,318 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Central de Chamados — Enfermagem</title>
+<title>Central de Enfermagem</title>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --cor-fundo:    #0d1117;
-    --cor-header:   #161b22;
-    --cor-borda:    #30363d;
-    --cor-card:     #161b22;
-    --cor-card-ok:  #161b22;
-    --cor-verde:    #22c55e;
-    --cor-vermelho: #ef4444;
-    --cor-texto:    #e6edf3;
-    --cor-sub:      #8b949e;
-    --header-h:     58px;
+    --bg:      #0d1117;
+    --surface: #161b22;
+    --border:  #30363d;
+    --text:    #e6edf3;
+    --muted:   #8b949e;
+    --header:  60px;
+
+    --chamada:     #ef4444;
+    --atendimento: #f59e0b;
+    --apoio:       #3b82f6;
+    --verde:       #22c55e;
   }
 
-  html, body {
-    height: 100%;
-    background: var(--cor-fundo);
-    color: var(--cor-texto);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    overflow: hidden;
-  }
+  html, body { height: 100%; background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
 
-  /* ── HEADER ─────────────────────────────────────── */
+  /* ── HEADER ── */
   header {
-    height: var(--header-h);
-    background: var(--cor-header);
-    border-bottom: 1px solid var(--cor-borda);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    gap: 16px;
+    height: var(--header);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 20px; gap: 20px;
   }
+  .pulso { width: 11px; height: 11px; border-radius: 50%;
+    background: var(--verde); box-shadow: 0 0 7px var(--verde); flex-shrink: 0; }
+  .pulso.alerta { background: var(--chamada); box-shadow: 0 0 9px var(--chamada);
+    animation: piscar .6s infinite; }
+  header h1 { font-size: .9rem; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+  .spacer { flex: 1; }
+  .relogio { font-size: 1rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .badge-alertas { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+  .badge-alertas span { font-weight: 700; font-size: 1rem; color: var(--chamada); }
+  .conn { font-size: .65rem; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px;
+    border: 1px solid; text-transform: uppercase; white-space: nowrap; }
+  .conn.ok  { color: var(--verde);  border-color: var(--verde);  background: #0f2e1a; }
+  .conn.off { color: #f59e0b; border-color: #f59e0b; background: #2d1a00; }
 
-  .header-esq {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 2px; }
+  .tab-btn {
+    padding: 8px 18px; background: transparent; border: none;
+    border-bottom: 2px solid transparent; color: var(--muted);
+    cursor: pointer; font-size: .8rem; letter-spacing: 1px;
+    text-transform: uppercase; transition: color .2s, border-color .2s;
   }
+  .tab-btn.ativo { color: #38bdf8; border-bottom-color: #38bdf8; }
 
-  .pulso-header {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--cor-verde);
-    box-shadow: 0 0 8px var(--cor-verde);
-    flex-shrink: 0;
-  }
+  /* ── PÁGINAS ── */
+  .pagina { display: none; height: calc(100vh - var(--header)); overflow: auto; }
+  .pagina.ativo { display: flex; flex-direction: column; }
 
-  .pulso-header.com-alerta {
-    background: var(--cor-vermelho);
-    box-shadow: 0 0 10px var(--cor-vermelho);
-    animation: piscar 0.6s infinite;
-  }
-
-  header h1 {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--cor-texto);
-  }
-
-  .relogio {
-    font-size: 1.1rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--cor-sub);
-    letter-spacing: 1px;
-  }
-
-  .contador-alertas {
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    color: var(--cor-sub);
-  }
-
-  .contador-alertas span {
-    color: var(--cor-vermelho);
-    font-weight: 700;
-    font-size: 1rem;
-  }
-
-  /* ── GRID DE QUARTOS ─────────────────────────────── */
-  .grid {
-    display: grid;
+  /* ── GRADE CENTRAL ── */
+  #pg-central.ativo { display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    gap: 2px;
-    background: var(--cor-borda);
-    height: calc(100vh - var(--header-h));
-  }
+    gap: 2px; background: var(--border); overflow: hidden; }
 
-  /* ── CARD DO QUARTO ──────────────────────────────── */
+  /* ── CARD ── */
   .card {
-    background: var(--cor-card);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: background 0.2s;
-    position: relative;
-    overflow: hidden;
-    padding: 12px;
+    --ac: var(--verde);
+    background: var(--surface);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 7px; cursor: pointer; position: relative;
+    overflow: hidden; padding: 10px; transition: background .2s;
   }
-
   .card:hover { background: #1c2230; }
+  .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--verde); transition: background .2s; }
 
-  /* borda lateral de status */
-  .card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 4px;
-    background: var(--cor-verde);
-    transition: background 0.2s;
-  }
+  .led { width: 16px; height: 16px; border-radius: 50%;
+    background: var(--verde); box-shadow: 0 0 6px var(--verde);
+    border: 2px solid #ffffff22; flex-shrink: 0; }
+  .card-nome    { font-size: .8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
+  .card-paciente { font-size: .7rem; color: var(--muted); min-height: 16px; text-align: center; }
+  .card-tipo    { font-size: .65rem; letter-spacing: .5px; min-height: 14px; text-align: center; }
+  .card-hora    { font-size: .7rem; font-variant-numeric: tabular-nums; color: var(--muted); min-height: 16px; }
+  .btn-atender  { display: none; border: none; color: #fff; font-size: .65rem;
+    font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 4px; cursor: pointer;
+    background: var(--ac); transition: opacity .2s; margin-top: 2px; }
+  .btn-atender:hover { opacity: .8; }
 
-  /* ── LED ─────────────────────────────────────────── */
-  .led {
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    background: var(--cor-verde);
-    box-shadow: 0 0 6px var(--cor-verde), 0 0 16px #22c55e44;
-    border: 2px solid #ffffff22;
-    flex-shrink: 0;
-  }
-
-  .card-nome {
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--cor-texto);
-    text-align: center;
-  }
-
-  .card-status {
-    font-size: 0.68rem;
-    color: var(--cor-sub);
-    letter-spacing: 0.5px;
-    text-align: center;
-  }
-
-  .card-hora {
-    font-size: 0.75rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--cor-sub);
-    min-height: 18px;
-  }
-
-  .btn-atender {
-    display: none;
-    background: var(--cor-vermelho);
-    border: none;
-    color: #fff;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 6px 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    margin-top: 4px;
-  }
-
-  .btn-atender:hover { opacity: 0.8; }
-
-  /* ── ESTADO ALERTA ───────────────────────────────── */
-  .card.alerta {
-    background: #1a0505;
-    animation: fundo-piscar 0.6s infinite;
-  }
-
-  .card.alerta::before { background: var(--cor-vermelho); }
-  .card.alerta:hover   { background: #220808; }
-
-  .card.alerta .led {
-    background: var(--cor-vermelho);
-    box-shadow: 0 0 10px var(--cor-vermelho), 0 0 28px #ef444466;
-    border-color: #fca5a5;
-    animation: piscar 0.5s infinite;
-  }
-
-  .card.alerta .card-nome  { color: #fca5a5; }
-  .card.alerta .card-status { color: #f87171; }
-  .card.alerta .card-hora  { color: #fca5a5; }
+  /* ── ALERTA ATIVO ── */
+  .card.alerta { background: color-mix(in srgb, var(--ac) 12%, #000); }
+  .card.alerta::before { background: var(--ac); }
+  .card.alerta .led { background: var(--ac); box-shadow: 0 0 10px var(--ac), 0 0 24px color-mix(in srgb, var(--ac) 50%, transparent);
+    border-color: color-mix(in srgb, var(--ac) 60%, #fff); animation: piscar .5s infinite; }
+  .card.alerta .card-nome  { color: color-mix(in srgb, var(--ac) 70%, #fff); }
+  .card.alerta .card-tipo  { color: color-mix(in srgb, var(--ac) 80%, #fff); }
   .card.alerta .btn-atender { display: block; }
+  .card.alerta::after { content: ''; position: absolute; inset: 0;
+    border: 2px solid var(--ac); border-radius: 2px; pointer-events: none;
+    animation: piscar .6s infinite; }
 
-  .card.alerta::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 2px solid var(--cor-vermelho);
-    pointer-events: none;
-    animation: borda-piscar 0.6s infinite;
-  }
+  /* Cor por tipo de alerta */
+  .card[data-tipo="chamada"]     { --ac: var(--chamada); }
+  .card[data-tipo="atendimento"] { --ac: var(--atendimento); }
+  .card[data-tipo="apoio"]       { --ac: var(--apoio); }
 
-  @keyframes piscar {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.1; }
-  }
+  @keyframes piscar { 0%,100%{opacity:1} 50%{opacity:.1} }
 
-  @keyframes fundo-piscar {
-    0%, 100% { background: #1a0505; }
-    50%       { background: #0d0101; }
-  }
-
-  @keyframes borda-piscar {
-    0%, 100% { opacity: 0.9; }
-    50%       { opacity: 0; }
-  }
-
-  /* ── STATUS DE CONEXÃO ───────────────────────────── */
-  .conn-badge {
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    border: 1px solid;
-    text-transform: uppercase;
-  }
-
-  .conn-badge.ok {
-    color: var(--cor-verde);
-    border-color: var(--cor-verde);
-    background: #0f2e1a;
-  }
-
-  .conn-badge.off {
-    color: #f59e0b;
-    border-color: #f59e0b;
-    background: #2d1a00;
-  }
-
-  /* ── Aviso de áudio bloqueado ── */
+  /* ── AVISO ÁUDIO ── */
   .aviso-audio {
-    position: fixed;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1c2230;
-    border: 1px solid #f59e0b;
-    color: #fbbf24;
-    font-size: 0.72rem;
-    letter-spacing: 1px;
-    padding: 8px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    animation: piscar 1.5s infinite;
-    z-index: 999;
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    background: var(--surface); border: 1px solid #f59e0b; color: #fbbf24;
+    font-size: .72rem; letter-spacing: 1px; padding: 8px 20px; border-radius: 20px;
+    cursor: pointer; animation: piscar 1.5s infinite; z-index: 999;
   }
   .aviso-audio.oculto { display: none; }
+
+  /* ── LEGENDA ── */
+  .legenda {
+    position: fixed; bottom: 14px; right: 14px;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: .65rem; color: var(--muted); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ── CADASTRO ── */
+  #pg-cadastro { padding: 32px; gap: 24px; }
+  .cad-titulo { font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; }
+
+  .cad-form {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 16px;
+    max-width: 500px;
+  }
+  .cad-form label { font-size: .75rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .cad-form select, .cad-form input {
+    width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-size: .9rem;
+    outline: none; transition: border-color .2s;
+  }
+  .cad-form select:focus, .cad-form input:focus { border-color: #38bdf8; }
+  .cad-form button {
+    padding: 10px; background: #38bdf8; border: none; border-radius: 6px;
+    color: #000; font-weight: 700; font-size: .85rem; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; transition: opacity .2s;
+  }
+  .cad-form button:hover { opacity: .85; }
+
+  .cad-lista { flex: 1; overflow: auto; }
+  .cad-table { width: 100%; max-width: 700px; border-collapse: collapse; font-size: .8rem; }
+  .cad-table th {
+    text-align: left; padding: 8px 12px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase; font-size: .65rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cad-table td { padding: 8px 12px; border-bottom: 1px solid #ffffff08; }
+  .cad-table tr:hover td { background: var(--surface); }
+  .cad-table .sem-paciente { color: #374151; font-style: italic; }
+  .btn-remover { background: transparent; border: 1px solid #7f1d1d; color: #f87171;
+    padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: .65rem; }
+  .btn-remover:hover { background: #7f1d1d44; }
+
+  /* ── LOGS ── */
+  #pg-logs { padding: 20px; gap: 16px; }
+  .logs-topo { display: flex; align-items: center; justify-content: space-between; }
+  .logs-titulo { font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; }
+  .btn-limpar-log { background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: .7rem; letter-spacing: 1px; }
+  .btn-limpar-log:hover { border-color: #8b949e; color: var(--text); }
+
+  .log-lista { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; }
+
+  .log-item {
+    display: grid; grid-template-columns: 80px 140px 160px 1fr;
+    gap: 12px; align-items: center;
+    padding: 9px 14px; border-radius: 6px;
+    background: var(--surface); border-left: 3px solid var(--border);
+    font-size: .78rem; animation: entrar .3s ease;
+  }
+  @keyframes entrar { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+  .log-item[data-tipo="chamada"]     { border-left-color: var(--chamada); }
+  .log-item[data-tipo="atendimento"] { border-left-color: var(--atendimento); }
+  .log-item[data-tipo="apoio"]       { border-left-color: var(--apoio); }
+  .log-item[data-tipo="atendido"]    { border-left-color: var(--verde); }
+
+  .log-ts      { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .72rem; }
+  .log-room    { font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+  .log-pac     { color: var(--muted); }
+  .log-evento  { font-weight: 500; }
+
+  .log-item[data-tipo="chamada"]     .log-evento { color: var(--chamada); }
+  .log-item[data-tipo="atendimento"] .log-evento { color: var(--atendimento); }
+  .log-item[data-tipo="apoio"]       .log-evento { color: var(--apoio); }
+  .log-item[data-tipo="atendido"]    .log-evento { color: var(--verde); }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-esq">
-    <div class="pulso-header" id="pulsoHeader"></div>
-    <h1>Central de Chamados &mdash; Enfermagem</h1>
+  <div class="pulso" id="pulsoHeader"></div>
+  <h1>Central de Enfermagem</h1>
+  <div class="tabs">
+    <button class="tab-btn ativo" onclick="mudarTab('central',this)">Central</button>
+    <button class="tab-btn"       onclick="mudarTab('cadastro',this)">Cadastro</button>
+    <button class="tab-btn"       onclick="mudarTab('logs',this)">Logs</button>
   </div>
-  <div class="contador-alertas">Chamados ativos: <span id="qtdAlertas">0</span></div>
+  <div class="spacer"></div>
+  <div class="badge-alertas">Ativos: <span id="qtdAlertas">0</span></div>
   <div class="relogio" id="relogio">00:00:00</div>
-  <div class="conn-badge off" id="connBadge">Conectando…</div>
+  <div class="conn off" id="connBadge">Conectando…</div>
 </header>
 
-<div class="grid" id="grid"></div>
+<!-- ── CENTRAL ── -->
+<div class="pagina ativo" id="pg-central"></div>
+
+<!-- ── CADASTRO ── -->
+<div class="pagina" id="pg-cadastro">
+  <div class="cad-titulo">Cadastro de Pacientes</div>
+
+  <div class="cad-form">
+    <div>
+      <label>Quarto</label>
+      <select id="cadQuarto"></select>
+    </div>
+    <div>
+      <label>Nome do Paciente</label>
+      <input type="text" id="cadNome" placeholder="Ex: Maria Aparecida" maxlength="60">
+    </div>
+    <button onclick="salvarPaciente()">Salvar</button>
+  </div>
+
+  <div class="cad-lista">
+    <table class="cad-table">
+      <thead><tr><th>Quarto</th><th>Paciente</th><th></th></tr></thead>
+      <tbody id="cadTabela"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── LOGS ── -->
+<div class="pagina" id="pg-logs">
+  <div class="logs-topo">
+    <span class="logs-titulo">Log de Eventos</span>
+    <button class="btn-limpar-log" onclick="limparLogsUI()">Limpar tela</button>
+  </div>
+  <div class="log-lista" id="logLista"></div>
+</div>
+
+<!-- Legenda de cores -->
+<div class="legenda" id="legendaEl">
+  <div class="leg-item"><div class="leg-dot" style="background:var(--chamada)"></div>Enfermagem</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--atendimento)"></div>Atendimento</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--apoio)"></div>Apoio</div>
+</div>
 
 <div class="aviso-audio" id="avisoAudio" onclick="ativarAudio()">
-  🔇 Clique aqui para ativar o som de alerta
+  🔇 Clique para ativar som de alerta
 </div>
 
 <script>
-// ── Definição dos 20 quartos ─────────────────────────────────────────────────
-const quartos = Array.from({ length: 20 }, (_, i) => ({
-  id: `quarto-${String(i + 1).padStart(2, '0')}`,
+// ── Quartos ──────────────────────────────────────────────────────────────────
+const QUARTOS = Array.from({ length: 20 }, (_, i) => ({
+  id:   `quarto-${String(i + 1).padStart(2, '0')}`,
   nome: `Quarto ${String(i + 1).padStart(2, '0')}`
 }));
 
 // ── Áudio ────────────────────────────────────────────────────────────────────
 let audioCtx = null;
-let audioDesbloqueado = false;
+let audioOk  = false;
 const sonsAtivos = {};
 
 function ativarAudio() {
-  if (audioDesbloqueado) return;
-
-  // Cria o contexto DENTRO do gesto do usuário (única forma garantida)
+  if (audioOk) return;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-  // Toca um buffer silencioso para "aquecer" o contexto — truque necessário em mobile/Chrome
-  const buffer = audioCtx.createBuffer(1, 1, 22050);
-  const src    = audioCtx.createBufferSource();
-  src.buffer   = buffer;
-  src.connect(audioCtx.destination);
-  src.start(0);
-
-  audioDesbloqueado = true;
+  const buf = audioCtx.createBuffer(1, 1, 22050);
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf; src.connect(audioCtx.destination); src.start(0);
+  audioOk = true;
   document.getElementById('avisoAudio').classList.add('oculto');
-  // Toca um bip de confirmação para o usuário saber que o som está ativo
-  setTimeout(bip, 100);
+  setTimeout(() => tocarBip('chamada'), 100);
 }
-
 document.addEventListener('click',      ativarAudio, { once: true });
 document.addEventListener('touchstart', ativarAudio, { once: true });
 
-function bip() {
-  if (!audioCtx || !audioDesbloqueado) return;
-  const osc  = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.type = 'square';
-  osc.frequency.setValueAtTime(960, audioCtx.currentTime);
-  osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-  osc.start(audioCtx.currentTime);
-  osc.stop(audioCtx.currentTime + 0.35);
+const SONS = {
+  chamada:     [[960, .12], [480, .23]],   // urgente, descendo
+  atendimento: [[600, .18], [520, .30]],   // suave, tom médio
+  apoio:       [[1100,.08], [900, .08], [1100,.08]], // rápido, agudo
+};
+
+function tocarBip(tipo) {
+  if (!audioCtx || !audioOk) return;
+  const passos = SONS[tipo] || SONS.chamada;
+  let t = audioCtx.currentTime;
+  passos.forEach(([freq, dur]) => {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = tipo === 'apoio' ? 'sine' : 'square';
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(.25, t);
+    gain.gain.exponentialRampToValueAtTime(.001, t + dur);
+    osc.start(t); osc.stop(t + dur);
+    t += dur;
+  });
 }
 
-function iniciarSom(id) {
+function iniciarSom(id, tipo) {
   if (sonsAtivos[id]) return;
-  bip();
-  sonsAtivos[id] = setInterval(bip, 1000);
+  tocarBip(tipo);
+  sonsAtivos[id] = setInterval(() => tocarBip(tipo), 1200);
 }
 
 function pararSom(id) {
@@ -340,133 +322,226 @@ function pararSom(id) {
   delete sonsAtivos[id];
 }
 
-// ── Montar grid ──────────────────────────────────────────────────────────────
-const grid = document.getElementById('grid');
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function mudarTab(nome, btn) {
+  document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativo'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
+  document.getElementById('pg-' + nome).classList.add('ativo');
+  btn.classList.add('ativo');
+  document.getElementById('legendaEl').style.display = nome === 'central' ? '' : 'none';
+}
 
-quartos.forEach(q => {
+// ── Montar grade ──────────────────────────────────────────────────────────────
+const grade = document.getElementById('pg-central');
+QUARTOS.forEach(q => {
   const card = document.createElement('div');
   card.className = 'card';
   card.id = 'card-' + q.id;
   card.innerHTML = `
     <div class="led"></div>
     <div class="card-nome">${q.nome}</div>
-    <div class="card-status" id="status-${q.id}">Normal</div>
-    <div class="card-hora"  id="hora-${q.id}"></div>
-    <button class="btn-atender" onclick="atender('${q.id}', event)">✔ Atender</button>
+    <div class="card-paciente" id="cpac-${q.id}"></div>
+    <div class="card-tipo"     id="ctipo-${q.id}"></div>
+    <div class="card-hora"     id="chora-${q.id}"></div>
+    <button class="btn-atender" onclick="atender('${q.id}',event)">✔ Atender</button>
   `;
-  grid.appendChild(card);
+  grade.appendChild(card);
 });
 
-// ── Atualizar UI de um quarto ────────────────────────────────────────────────
-function ativarAlerta(id, hora) {
+// ── Montar select de cadastro ─────────────────────────────────────────────────
+const cadQuarto = document.getElementById('cadQuarto');
+QUARTOS.forEach(q => {
+  const op = document.createElement('option');
+  op.value = q.id; op.textContent = q.nome;
+  cadQuarto.appendChild(op);
+});
+
+// ── Alertas ───────────────────────────────────────────────────────────────────
+function ativarAlerta(id, hora, tipo, paciente) {
   const card = document.getElementById('card-' + id);
   if (!card) return;
   card.classList.add('alerta');
-  document.getElementById('status-' + id).textContent = 'CHAMANDO...';
-  document.getElementById('hora-'   + id).textContent = hora || '';
-  iniciarSom(id);
+  card.dataset.tipo = tipo || 'chamada';
+
+  const TIPO_LABEL = { chamada: '🔴 Chamou Enfermagem', atendimento: '🟠 Atendimento', apoio: '🔵 Apoio' };
+  document.getElementById('ctipo-' + id).textContent = TIPO_LABEL[tipo] || tipo;
+  document.getElementById('chora-' + id).textContent = hora || '';
+  if (paciente) document.getElementById('cpac-' + id).textContent = paciente;
+
+  iniciarSom(id, tipo || 'chamada');
   atualizarContador();
-  atualizarPulsoHeader();
 }
 
 function desativarAlerta(id) {
   const card = document.getElementById('card-' + id);
   if (!card) return;
   card.classList.remove('alerta');
-  document.getElementById('status-' + id).textContent = 'Normal';
-  document.getElementById('hora-'   + id).textContent = '';
+  delete card.dataset.tipo;
+  document.getElementById('ctipo-' + id).textContent = '';
+  document.getElementById('chora-' + id).textContent = '';
   pararSom(id);
   atualizarContador();
-  atualizarPulsoHeader();
-}
-
-function atender(id, e) {
-  e.stopPropagation();
-  // Tenta via WebSocket (tempo real), cai no HTTP se não estiver conectado
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: 'atender', room: id }));
-  } else {
-    fetch('/api/clear', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room: id })
-    });
-  }
-  desativarAlerta(id);
 }
 
 function atualizarContador() {
   const qtd = document.querySelectorAll('.card.alerta').length;
   document.getElementById('qtdAlertas').textContent = qtd;
+  document.getElementById('pulsoHeader').classList.toggle('alerta', qtd > 0);
 }
 
-function atualizarPulsoHeader() {
-  const temAlerta = document.querySelectorAll('.card.alerta').length > 0;
-  document.getElementById('pulsoHeader').classList.toggle('com-alerta', temAlerta);
+function atender(id, e) {
+  e.stopPropagation();
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'atender', room: id }));
+  } else {
+    fetch('/api/clear', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: id }) });
+  }
+  desativarAlerta(id);
 }
 
-// ── Relógio ──────────────────────────────────────────────────────────────────
-function tick() {
+// ── Pacientes ─────────────────────────────────────────────────────────────────
+const pacientesLocais = {};
+
+function atualizarPaciente(room, nome) {
+  if (nome) pacientesLocais[room] = nome;
+  else delete pacientesLocais[room];
+
+  // Atualiza card na grade
+  const el = document.getElementById('cpac-' + room);
+  if (el) el.textContent = nome || '';
+
+  // Atualiza tabela do cadastro
+  renderTabela();
+}
+
+function renderTabela() {
+  const tbody = document.getElementById('cadTabela');
+  tbody.innerHTML = '';
+  QUARTOS.forEach(q => {
+    const tr = document.createElement('tr');
+    const nome = pacientesLocais[q.id] || '';
+    tr.innerHTML = `
+      <td>${q.nome}</td>
+      <td class="${nome ? '' : 'sem-paciente'}">${nome || '— sem paciente —'}</td>
+      <td>${nome ? `<button class="btn-remover" onclick="removerPaciente('${q.id}')">Remover</button>` : ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function salvarPaciente() {
+  const room = document.getElementById('cadQuarto').value;
+  const nome = document.getElementById('cadNome').value.trim();
+  fetch('/api/paciente', { method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ room, nome }) });
+  atualizarPaciente(room, nome);
+  document.getElementById('cadNome').value = '';
+}
+
+function removerPaciente(room) {
+  fetch('/api/paciente', { method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ room, nome: '' }) });
+  atualizarPaciente(room, '');
+}
+
+// ── Logs ─────────────────────────────────────────────────────────────────────
+function adicionarLog(entry) {
+  const lista = document.getElementById('logLista');
+  const div   = document.createElement('div');
+  div.className  = 'log-item';
+  div.dataset.tipo = entry.tipo;
+
+  const nomeQuarto = QUARTOS.find(q => q.id === entry.room)?.nome || entry.room;
+  div.innerHTML = `
+    <span class="log-ts">${entry.ts}</span>
+    <span class="log-room">${nomeQuarto}</span>
+    <span class="log-pac">${entry.paciente || '—'}</span>
+    <span class="log-evento">${entry.evento}</span>
+  `;
+  lista.prepend(div);
+  // Limita a 200 itens na tela
+  while (lista.children.length > 200) lista.lastChild.remove();
+}
+
+function limparLogsUI() {
+  document.getElementById('logLista').innerHTML = '';
+}
+
+// ── Relógio ───────────────────────────────────────────────────────────────────
+setInterval(() => {
   document.getElementById('relogio').textContent =
     new Date().toLocaleTimeString('pt-BR');
-}
-tick();
-setInterval(tick, 1000);
+}, 1000);
 
-// ── Polling HTTP (fallback garantido mesmo sem WebSocket) ────────────────────
+// ── Polling HTTP ──────────────────────────────────────────────────────────────
 async function sincronizar() {
   try {
     const res  = await fetch('/api/status');
     const data = await res.json();
-
-    quartos.forEach(q => {
+    QUARTOS.forEach(q => {
       const card  = document.getElementById('card-' + q.id);
       const ativo = !!data[q.id];
       const jaEsta = card.classList.contains('alerta');
-
-      if (ativo && !jaEsta) ativarAlerta(q.id, data[q.id].hora);
+      if (ativo && !jaEsta) ativarAlerta(q.id, data[q.id].hora, data[q.id].tipo, data[q.id].paciente);
       if (!ativo && jaEsta) desativarAlerta(q.id);
     });
   } catch (_) {}
 }
-
-// Polling a cada 2 segundos — garante sincronia independente do WebSocket
 sincronizar();
 setInterval(sincronizar, 2000);
 
-// ── WebSocket (tempo real quando disponível) ─────────────────────────────────
+// ── WebSocket ─────────────────────────────────────────────────────────────────
 const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 let ws;
 
 function conectar() {
   ws = new WebSocket(WS_URL);
 
-  ws.onopen = () => {
+  ws.onopen  = () => {
     document.getElementById('connBadge').textContent = 'Conectado';
-    document.getElementById('connBadge').className = 'conn-badge ok';
+    document.getElementById('connBadge').className   = 'conn ok';
   };
-
   ws.onclose = () => {
     document.getElementById('connBadge').textContent = 'Polling ativo';
-    document.getElementById('connBadge').className = 'conn-badge off';
+    document.getElementById('connBadge').className   = 'conn off';
     setTimeout(conectar, 3000);
   };
-
   ws.onerror = () => ws.close();
 
   ws.onmessage = ({ data }) => {
     const msg = JSON.parse(data);
 
     if (msg.type === 'init') {
-      Object.values(msg.alertas).forEach(a => ativarAlerta(a.room, a.hora));
+      Object.values(msg.pacientes || {}).forEach(({ room, nome }) => {});
+      Object.entries(msg.pacientes || {}).forEach(([room, nome]) => atualizarPaciente(room, nome));
+      Object.values(msg.alertas   || {}).forEach(a => ativarAlerta(a.room, a.hora, a.tipo, a.paciente));
+      (msg.logs || []).slice().reverse().forEach(adicionarLog);
+      renderTabela();
     }
 
     if (msg.type === 'alerta') {
-      msg.ativo ? ativarAlerta(msg.room, msg.hora) : desativarAlerta(msg.room);
+      msg.ativo
+        ? ativarAlerta(msg.room, msg.hora, msg.tipo, msg.paciente)
+        : desativarAlerta(msg.room);
+    }
+
+    if (msg.type === 'atendido') {
+      desativarAlerta(msg.room);
+    }
+
+    if (msg.type === 'paciente') {
+      atualizarPaciente(msg.room, msg.nome);
+    }
+
+    if (msg.type === 'log') {
+      adicionarLog(msg.entry);
     }
   };
 }
-
 conectar();
 </script>
 </body>
