@@ -77,6 +77,21 @@ app.get('/api/status', (req, res) => res.json(alertas));
 // GET /qr/:room/:tipo  → registra alerta e retorna página de confirmação
 app.get('/qr/:room/:tipo', (req, res) => {
   const { room, tipo } = req.params;
+  // GET /qr/:room/clear → cancela o chamado via GET simples
+  if (tipo === 'clear') {
+    delete alertas[room];
+    broadcast({ type: 'alerta', room, ativo: false });
+    console.log(`[QR/CLEAR] ${room}`);
+    const nomeQ = room.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return res.send(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>Chamado Cancelado</title>
+      <style>*{margin:0;padding:0;box-sizing:border-box}body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d1117;font-family:'Segoe UI',sans-serif;color:#e6edf3;text-align:center;padding:24px}.box{display:flex;flex-direction:column;align-items:center;gap:16px}.i{font-size:5rem}.t{font-size:1.5rem;font-weight:800;color:#22c55e;letter-spacing:2px;text-transform:uppercase}.s{font-size:.85rem;color:#8b949e}</style>
+      </head><body><div class="box"><div class="i">✅</div>
+      <div class="t">Chamado Cancelado</div>
+      <div class="s">${nomeQ}</div></div></body></html>`);
+  }
+
   const tiposValidos = ['chamada', 'atendimento', 'apoio'];
 
   if (!tiposValidos.includes(tipo)) {
