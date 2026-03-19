@@ -61,50 +61,91 @@
   .pagina.ativo { display: flex; flex-direction: column; }
 
   /* ── GRADE CENTRAL ── */
-  #pg-central.ativo { display: grid;
+  #pg-central.ativo {
+    display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
-    gap: 2px; background: var(--border); overflow: hidden; }
+    gap: 2px;
+    background: var(--border);
+    overflow: hidden;
+    height: calc(100vh - var(--header));
+  }
 
   /* ── CARD ── */
   .card {
     --ac: var(--verde);
     background: var(--surface);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 7px; cursor: pointer; position: relative;
-    overflow: hidden; padding: 10px; transition: background .2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    padding: 4px;
+    transition: background .2s;
   }
   .card:hover { background: #1c2230; }
-  .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px; background: var(--verde); transition: background .2s; }
+  .card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--verde); transition: background .2s;
+  }
 
-  .led { width: 16px; height: 16px; border-radius: 50%;
-    background: var(--verde); box-shadow: 0 0 6px var(--verde);
-    border: 2px solid #ffffff22; flex-shrink: 0; }
-  .card-nome    { font-size: .8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
-  .card-paciente { font-size: .7rem; color: var(--muted); min-height: 16px; text-align: center; }
-  .card-tipo    { font-size: .65rem; letter-spacing: .5px; min-height: 14px; text-align: center; }
-  .card-hora    { font-size: .7rem; font-variant-numeric: tabular-nums; color: var(--muted); min-height: 16px; }
-  .btn-atender  { display: none; border: none; color: #fff; font-size: .65rem;
-    font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-    padding: 5px 12px; border-radius: 4px; cursor: pointer;
-    background: var(--ac); transition: opacity .2s; margin-top: 2px; }
+  .led {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--verde); box-shadow: 0 0 4px var(--verde);
+    border: 1px solid #ffffff22; flex-shrink: 0;
+  }
+  .card-nome {
+    font-size: .6rem; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase; text-align: center; line-height: 1.2;
+    color: var(--text);
+  }
+
+  /* Detalhes: ocultos no estado normal, visíveis no alerta */
+  .card-paciente, .card-tipo, .card-hora, .btn-atender { display: none; }
+
+  .card.alerta .card-paciente {
+    display: block; font-size: .55rem; color: #e2e8f0;
+    text-align: center; width: 100%; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; padding: 0 3px;
+  }
+  .card.alerta .card-tipo {
+    display: block; font-size: .55rem; font-weight: 700;
+    text-align: center;
+    color: color-mix(in srgb, var(--ac) 80%, #fff);
+  }
+  .card.alerta .card-hora {
+    display: block; font-size: .52rem;
+    font-variant-numeric: tabular-nums; color: #94a3b8; text-align: center;
+  }
+  .card.alerta .btn-atender {
+    display: block; border: none; color: #fff; font-size: .52rem;
+    font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 3px; cursor: pointer;
+    background: var(--ac); transition: opacity .2s;
+    white-space: nowrap; margin-top: 1px;
+  }
   .btn-atender:hover { opacity: .8; }
 
   /* ── ALERTA ATIVO ── */
   .card.alerta { background: color-mix(in srgb, var(--ac) 12%, #000); }
   .card.alerta::before { background: var(--ac); }
-  .card.alerta .led { background: var(--ac); box-shadow: 0 0 10px var(--ac), 0 0 24px color-mix(in srgb, var(--ac) 50%, transparent);
-    border-color: color-mix(in srgb, var(--ac) 60%, #fff); animation: piscar .5s infinite; }
-  .card.alerta .card-nome  { color: color-mix(in srgb, var(--ac) 70%, #fff); }
-  .card.alerta .card-tipo  { color: color-mix(in srgb, var(--ac) 80%, #fff); }
-  .card.alerta .btn-atender { display: block; }
-  .card.alerta::after { content: ''; position: absolute; inset: 0;
-    border: 2px solid var(--ac); border-radius: 2px; pointer-events: none;
-    animation: piscar .6s infinite; }
+  .card.alerta .led {
+    background: var(--ac);
+    box-shadow: 0 0 6px var(--ac), 0 0 16px color-mix(in srgb, var(--ac) 50%, transparent);
+    border-color: color-mix(in srgb, var(--ac) 60%, #fff);
+    animation: piscar .5s infinite;
+  }
+  .card.alerta .card-nome { color: color-mix(in srgb, var(--ac) 70%, #fff); }
+  .card.alerta::after {
+    content: ''; position: absolute; inset: 0;
+    border: 2px solid var(--ac); border-radius: 2px;
+    pointer-events: none; animation: piscar .6s infinite;
+  }
 
-  /* Cor por tipo de alerta */
+  /* Cor por tipo */
   .card[data-tipo="chamada"]     { --ac: var(--chamada); }
   .card[data-tipo="atendimento"] { --ac: var(--atendimento); }
   .card[data-tipo="apoio"]       { --ac: var(--apoio); }
