@@ -1,0 +1,13 @@
+{
+  "name": "nurse-call-system",
+  "version": "1.0.0",
+  "description": "Sistema de chamada de enfermagem em tempo real",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.17.0"
+  }
+}

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Chamados — Enfermagem</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cor-fundo:    #0d1117;
+    --cor-header:   #161b22;
+    --cor-borda:    #30363d;
+    --cor-card:     #161b22;
+    --cor-card-ok:  #161b22;
+    --cor-verde:    #22c55e;
+    --cor-vermelho: #ef4444;
+    --cor-texto:    #e6edf3;
+    --cor-sub:      #8b949e;
+    --header-h:     58px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  /* ── HEADER ─────────────────────────────────────── */
+  header {
+    height: var(--header-h);
+    background: var(--cor-header);
+    border-bottom: 1px solid var(--cor-borda);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    gap: 16px;
+  }
+
+  .header-esq {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pulso-header {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--cor-verde);
+    box-shadow: 0 0 8px var(--cor-verde);
+    flex-shrink: 0;
+  }
+
+  .pulso-header.com-alerta {
+    background: var(--cor-vermelho);
+    box-shadow: 0 0 10px var(--cor-vermelho);
+    animation: piscar 0.6s infinite;
+  }
+
+  header h1 {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cor-texto);
+  }
+
+  .relogio {
+    font-size: 1.1rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--cor-sub);
+    letter-spacing: 1px;
+  }
+
+  .contador-alertas {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: var(--cor-sub);
+  }
+
+  .contador-alertas span {
+    color: var(--cor-vermelho);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* ── GRID DE QUARTOS ─────────────────────────────── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--cor-borda);
+    height: calc(100vh - var(--header-h));
+  }
+
+  /* ── CARD DO QUARTO ──────────────────────────────── */
+  .card {
+    background: var(--cor-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  .card:hover { background: #1c2230; }
+
+  /* borda lateral de status */
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--cor-verde);
+    transition: background 0.2s;
+  }
+
+  /* ── LED ─────────────────────────────────────────── */
+  .led {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--cor-verde);
+    box-shadow: 0 0 6px var(--cor-verde), 0 0 16px #22c55e44;
+    border: 2px solid #ffffff22;
+    flex-shrink: 0;
+  }
+
+  .card-nome {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--cor-texto);
+    text-align: center;
+  }
+
+  .card-status {
+    font-size: 0.68rem;
+    color: var(--cor-sub);
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  .card-hora {
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--cor-sub);
+    min-height: 18px;
+  }
+
+  .btn-atender {
+    display: none;
+    background: var(--cor-vermelho);
+    border: none;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+  }
+
+  .btn-atender:hover { opacity: 0.8; }
+
+  /* ── ESTADO ALERTA ───────────────────────────────── */
+  .card.alerta {
+    background: #1a0505;
+    animation: fundo-piscar 0.6s infinite;
+  }
+
+  .card.alerta::before { background: var(--cor-vermelho); }
+  .card.alerta:hover   { background: #220808; }
+
+  .card.alerta .led {
+    background: var(--cor-vermelho);
+    box-shadow: 0 0 10px var(--cor-vermelho), 0 0 28px #ef444466;
+    border-color: #fca5a5;
+    animation: piscar 0.5s infinite;
+  }
+
+  .card.alerta .card-nome  { color: #fca5a5; }
+  .card.alerta .card-status { color: #f87171; }
+  .card.alerta .card-hora  { color: #fca5a5; }
+  .card.alerta .btn-atender { display: block; }
+
+  .card.alerta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--cor-vermelho);
+    pointer-events: none;
+    animation: borda-piscar 0.6s infinite;
+  }
+
+  @keyframes piscar {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.1; }
+  }
+
+  @keyframes fundo-piscar {
+    0%, 100% { background: #1a0505; }
+    50%       { background: #0d0101; }
+  }
+
+  @keyframes borda-piscar {
+    0%, 100% { opacity: 0.9; }
+    50%       { opacity: 0; }
+  }
+
+  /* ── STATUS DE CONEXÃO ───────────────────────────── */
+  .conn-badge {
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+    text-transform: uppercase;
+  }
+
+  .conn-badge.ok {
+    color: var(--cor-verde);
+    border-color: var(--cor-verde);
+    background: #0f2e1a;
+  }
+
+  .conn-badge.off {
+    color: #f59e0b;
+    border-color: #f59e0b;
+    background: #2d1a00;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-esq">
+    <div class="pulso-header" id="pulsoHeader"></div>
+    <h1>Central de Chamados &mdash; Enfermagem</h1>
+  </div>
+  <div class="contador-alertas">Chamados ativos: <span id="qtdAlertas">0</span></div>
+  <div class="relogio" id="relogio">00:00:00</div>
+  <div class="conn-badge off" id="connBadge">Conectando…</div>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<script>
+// ── Definição dos 20 quartos ─────────────────────────────────────────────────
+const quartos = Array.from({ length: 20 }, (_, i) => ({
+  id: `quarto-${String(i + 1).padStart(2, '0')}`,
+  nome: `Quarto ${String(i + 1).padStart(2, '0')}`
+}));
+
+// ── Áudio ────────────────────────────────────────────────────────────────────
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const sonsAtivos = {};
+
+function bip() {
+  const osc  = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(960, audioCtx.currentTime);
+  osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.12);
+  gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime + 0.35);
+}
+
+function iniciarSom(id) {
+  if (sonsAtivos[id]) return;
+  bip();
+  sonsAtivos[id] = setInterval(bip, 1000);
+}
+
+function pararSom(id) {
+  clearInterval(sonsAtivos[id]);
+  delete sonsAtivos[id];
+}
+
+// ── Montar grid ──────────────────────────────────────────────────────────────
+const grid = document.getElementById('grid');
+
+quartos.forEach(q => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.id = 'card-' + q.id;
+  card.innerHTML = `
+    <div class="led"></div>
+    <div class="card-nome">${q.nome}</div>
+    <div class="card-status" id="status-${q.id}">Normal</div>
+    <div class="card-hora"  id="hora-${q.id}"></div>
+    <button class="btn-atender" onclick="atender('${q.id}', event)">✔ Atender</button>
+  `;
+  grid.appendChild(card);
+});
+
+// ── Atualizar UI de um quarto ────────────────────────────────────────────────
+function ativarAlerta(id, hora) {
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  card.classList.add('alerta');
+  document.getElementById('status-' + id).textContent = 'CHAMANDO...';
+  document.getElementById('hora-'   + id).textContent = hora || '';
+  iniciarSom(id);
+  atualizarContador();
+  atualizarPulsoHeader();
+}
+
+function desativarAlerta(id) {
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  card.classList.remove('alerta');
+  document.getElementById('status-' + id).textContent = 'Normal';
+  document.getElementById('hora-'   + id).textContent = '';
+  pararSom(id);
+  atualizarContador();
+  atualizarPulsoHeader();
+}
+
+function atender(id, e) {
+  e.stopPropagation();
+  ws.send(JSON.stringify({ type: 'atender', room: id }));
+  desativarAlerta(id);
+}
+
+function atualizarContador() {
+  const qtd = document.querySelectorAll('.card.alerta').length;
+  document.getElementById('qtdAlertas').textContent = qtd;
+}
+
+function atualizarPulsoHeader() {
+  const temAlerta = document.querySelectorAll('.card.alerta').length > 0;
+  document.getElementById('pulsoHeader').classList.toggle('com-alerta', temAlerta);
+}
+
+// ── Relógio ──────────────────────────────────────────────────────────────────
+function tick() {
+  document.getElementById('relogio').textContent =
+    new Date().toLocaleTimeString('pt-BR');
+}
+tick();
+setInterval(tick, 1000);
+
+// ── WebSocket ────────────────────────────────────────────────────────────────
+const WS_URL = `ws://${location.host}`;
+let ws;
+
+function conectar() {
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    document.getElementById('connBadge').textContent = 'Conectado';
+    document.getElementById('connBadge').className = 'conn-badge ok';
+  };
+
+  ws.onclose = () => {
+    document.getElementById('connBadge').textContent = 'Sem conexão';
+    document.getElementById('connBadge').className = 'conn-badge off';
+    setTimeout(conectar, 3000); // reconecta automaticamente
+  };
+
+  ws.onerror = () => ws.close();
+
+  ws.onmessage = ({ data }) => {
+    const msg = JSON.parse(data);
+
+    if (msg.type === 'init') {
+      // Estado inicial ao conectar
+      Object.values(msg.alertas).forEach(a => ativarAlerta(a.room, a.hora));
+    }
+
+    if (msg.type === 'alerta') {
+      msg.ativo ? ativarAlerta(msg.room, msg.hora) : desativarAlerta(msg.room);
+    }
+  };
+}
+
+conectar();
+</script>
+</body>
+</html>
