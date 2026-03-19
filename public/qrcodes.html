@@ -131,10 +131,18 @@
 <div class="grade" id="grade"></div>
 
 <script>
-  const QUARTOS = Array.from({ length: 100 }, (_, i) => ({
-    id:   `quarto-${String(i + 1).padStart(2, '0')}`,
-    nome: `Quarto ${String(i + 1).padStart(2, '0')}`
-  }));
+  const QUARTOS = [
+    { id: 'recepcao',           nome: 'Recepção'           },
+    { id: 'corredor-entrada',   nome: 'Corredor Entrada'   },
+    { id: 'banheiro-feminino',  nome: 'Banheiro Feminino'  },
+    { id: 'banheiro-masculino', nome: 'Banheiro Masculino' },
+    { id: 'corredor-a',         nome: 'Corredor A'         },
+    { id: 'corredor-b',         nome: 'Corredor B'         },
+    ...Array.from({ length: 20 }, (_, i) => ({
+      id:   `leito-${String(i + 1).padStart(2, '0')}`,
+      nome: `Leito ${String(i + 1).padStart(2, '0')}`
+    }))
+  ];
 
   const TIPO_INFO = {
     chamada:     { label: 'Enfermagem', badge: 'badge-chamada',     icone: '🔴' },

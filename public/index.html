@@ -13,7 +13,8 @@
     --border:  #30363d;
     --text:    #e6edf3;
     --muted:   #8b949e;
-    --header:  60px;
+    --header:  58px;
+    --parede:  #334155;
 
     --chamada:     #ef4444;
     --atendimento: #f59e0b;
@@ -26,219 +27,233 @@
 
   /* ── HEADER ── */
   header {
-    height: var(--header);
-    background: var(--surface);
+    height: var(--header); background: var(--surface);
     border-bottom: 1px solid var(--border);
-    display: flex; align-items: center;
-    padding: 0 20px; gap: 20px;
+    display: flex; align-items: center; padding: 0 18px; gap: 16px;
   }
-  .pulso { width: 11px; height: 11px; border-radius: 50%;
-    background: var(--verde); box-shadow: 0 0 7px var(--verde); flex-shrink: 0; }
-  .pulso.alerta { background: var(--chamada); box-shadow: 0 0 9px var(--chamada);
-    animation: piscar .6s infinite; }
-  header h1 { font-size: .9rem; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+  .pulso { width: 10px; height: 10px; border-radius: 50%;
+    background: var(--verde); box-shadow: 0 0 6px var(--verde); flex-shrink: 0; }
+  .pulso.alerta { background: var(--chamada); box-shadow: 0 0 8px var(--chamada); animation: piscar .6s infinite; }
+  header h1 { font-size: .85rem; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
   .spacer { flex: 1; }
-  .relogio { font-size: 1rem; font-variant-numeric: tabular-nums; color: var(--muted); }
-  .badge-alertas { font-size: .75rem; color: var(--muted); white-space: nowrap; }
-  .badge-alertas span { font-weight: 700; font-size: 1rem; color: var(--chamada); }
-  .conn { font-size: .65rem; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px;
+  .relogio { font-size: .95rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .badge-alertas { font-size: .72rem; color: var(--muted); white-space: nowrap; }
+  .badge-alertas span { font-weight: 700; font-size: .95rem; color: var(--chamada); }
+  .conn { font-size: .62rem; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px;
     border: 1px solid; text-transform: uppercase; white-space: nowrap; }
-  .conn.ok  { color: var(--verde);  border-color: var(--verde);  background: #0f2e1a; }
+  .conn.ok  { color: var(--verde); border-color: var(--verde); background: #0f2e1a; }
   .conn.off { color: #f59e0b; border-color: #f59e0b; background: #2d1a00; }
 
   /* ── TABS ── */
   .tabs { display: flex; gap: 2px; }
-  .tab-btn {
-    padding: 8px 18px; background: transparent; border: none;
+  .tab-btn { padding: 7px 16px; background: transparent; border: none;
     border-bottom: 2px solid transparent; color: var(--muted);
-    cursor: pointer; font-size: .8rem; letter-spacing: 1px;
-    text-transform: uppercase; transition: color .2s, border-color .2s;
-  }
+    cursor: pointer; font-size: .75rem; letter-spacing: 1px;
+    text-transform: uppercase; transition: color .2s, border-color .2s; }
   .tab-btn.ativo { color: #38bdf8; border-bottom-color: #38bdf8; }
 
   /* ── PÁGINAS ── */
   .pagina { display: none; height: calc(100vh - var(--header)); overflow: auto; }
   .pagina.ativo { display: flex; flex-direction: column; }
 
-  /* ── GRADE CENTRAL ── */
+  /* ════════════════════════════════════════════
+     PLANTA BAIXA
+  ════════════════════════════════════════════ */
   #pg-central.ativo {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
-    gap: 2px;
-    background: var(--border);
-    overflow: hidden;
+    grid-template-columns: 1.4fr 1fr 0.65fr 1fr 1.4fr;
+    grid-template-rows: 0.75fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+      "rec   rec   centa  bf    bm   "
+      "l01   l02   corra  l03   l04  "
+      "l05   l06   corra  l07   l08  "
+      "l09   l10   posto  l11   l12  "
+      "l13   l14   corrb  l15   l16  "
+      "l17   l18   corrb  l19   l20  ";
+    gap: 4px;
+    background: var(--parede);
+    padding: 4px;
     height: calc(100vh - var(--header));
+    overflow: hidden;
   }
 
-  /* ── CARD ── */
+  /* ── CARD BASE ── */
   .card {
     --ac: var(--verde);
-    background: var(--surface);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    padding: 4px;
-    transition: background .2s;
+    background: #e8edf2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px; cursor: pointer; position: relative;
+    overflow: hidden; padding: 6px; transition: background .2s;
+    border-radius: 3px;
+    color: #1e293b;
   }
-  .card:hover { background: #1c2230; }
-  .card::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-    width: 3px; background: var(--verde); transition: background .2s;
-  }
+  .card:hover { filter: brightness(.95); }
 
-  .led {
-    width: 10px; height: 10px; border-radius: 50%;
+  /* Tarja lateral de tipo */
+  .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--verde); transition: background .2s; border-radius: 3px 0 0 3px; }
+
+  .led { width: 10px; height: 10px; border-radius: 50%;
     background: var(--verde); box-shadow: 0 0 4px var(--verde);
-    border: 1px solid #ffffff22; flex-shrink: 0;
-  }
-  .card-nome {
-    font-size: .6rem; font-weight: 700; letter-spacing: .5px;
-    text-transform: uppercase; text-align: center; line-height: 1.2;
-    color: var(--text);
-  }
-
-  /* Detalhes: ocultos no estado normal, visíveis no alerta */
+    border: 1px solid #ffffff44; flex-shrink: 0; }
+  .card-icone  { font-size: clamp(.9rem, 2vw, 1.3rem); line-height: 1; }
+  .card-nome   { font-size: clamp(.5rem, 1.1vw, .72rem); font-weight: 700;
+    letter-spacing: .3px; text-transform: uppercase; text-align: center;
+    line-height: 1.2; color: #1e293b; }
   .card-paciente, .card-tipo, .card-hora, .btn-atender { display: none; }
 
+  /* Alerta: mostra os detalhes */
   .card.alerta .card-paciente {
-    display: block; font-size: .55rem; color: #e2e8f0;
+    display: block; font-size: clamp(.45rem, .9vw, .6rem);
+    color: color-mix(in srgb, var(--ac) 20%, #000);
     text-align: center; width: 100%; overflow: hidden;
-    text-overflow: ellipsis; white-space: nowrap; padding: 0 3px;
+    text-overflow: ellipsis; white-space: nowrap; padding: 0 4px;
   }
   .card.alerta .card-tipo {
-    display: block; font-size: .55rem; font-weight: 700;
-    text-align: center;
-    color: color-mix(in srgb, var(--ac) 80%, #fff);
+    display: block; font-size: clamp(.42rem, .85vw, .58rem);
+    font-weight: 700; text-align: center;
+    color: color-mix(in srgb, var(--ac) 80%, #000);
   }
   .card.alerta .card-hora {
-    display: block; font-size: .52rem;
-    font-variant-numeric: tabular-nums; color: #94a3b8; text-align: center;
+    display: block; font-size: clamp(.4rem, .8vw, .56rem);
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in srgb, var(--ac) 60%, #333); text-align: center;
   }
   .card.alerta .btn-atender {
-    display: block; border: none; color: #fff; font-size: .52rem;
-    font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    display: block; border: none; color: #fff;
+    font-size: clamp(.4rem, .8vw, .54rem); font-weight: 700;
+    letter-spacing: .5px; text-transform: uppercase;
     padding: 3px 8px; border-radius: 3px; cursor: pointer;
-    background: var(--ac); transition: opacity .2s;
-    white-space: nowrap; margin-top: 1px;
+    background: var(--ac); transition: opacity .2s; white-space: nowrap;
   }
   .btn-atender:hover { opacity: .8; }
 
   /* ── ALERTA ATIVO ── */
-  .card.alerta { background: color-mix(in srgb, var(--ac) 12%, #000); }
+  .card.alerta { background: color-mix(in srgb, var(--ac) 18%, #fff); }
   .card.alerta::before { background: var(--ac); }
   .card.alerta .led {
-    background: var(--ac);
-    box-shadow: 0 0 6px var(--ac), 0 0 16px color-mix(in srgb, var(--ac) 50%, transparent);
+    background: var(--ac); box-shadow: 0 0 7px var(--ac);
     border-color: color-mix(in srgb, var(--ac) 60%, #fff);
     animation: piscar .5s infinite;
   }
-  .card.alerta .card-nome { color: color-mix(in srgb, var(--ac) 70%, #fff); }
-  .card.alerta::after {
-    content: ''; position: absolute; inset: 0;
-    border: 2px solid var(--ac); border-radius: 2px;
-    pointer-events: none; animation: piscar .6s infinite;
-  }
+  .card.alerta .card-nome { color: color-mix(in srgb, var(--ac) 70%, #000); }
+  .card.alerta::after { content: ''; position: absolute; inset: 0;
+    border: 2px solid var(--ac); border-radius: 3px;
+    pointer-events: none; animation: piscar .6s infinite; }
 
-  /* Cor por tipo */
   .card[data-tipo="chamada"]     { --ac: var(--chamada); }
   .card[data-tipo="atendimento"] { --ac: var(--atendimento); }
   .card[data-tipo="apoio"]       { --ac: var(--apoio); }
 
-  @keyframes piscar { 0%,100%{opacity:1} 50%{opacity:.1} }
+  @keyframes piscar { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+  /* ── Tipos de cômodo ── */
+  .card.tipo-leito    { background: #f1f5f9; }
+  .card.tipo-corredor { background: #dde3ea; cursor: default; }
+  .card.tipo-corredor:hover { filter: none; }
+  .card.tipo-banheiro { background: #e0f2fe; }
+  .card.tipo-recepcao { background: #f0fdf4; }
+
+  .card.tipo-posto {
+    background: #1e3a5f; color: #bfdbfe;
+    cursor: default; border: none;
+  }
+  .card.tipo-posto::before   { background: #3b82f6; }
+  .card.tipo-posto .card-nome { color: #bfdbfe; font-size: clamp(.5rem, 1.1vw, .72rem); }
+  .card.tipo-posto .card-icone { font-size: clamp(1rem, 2.2vw, 1.5rem); }
+  .card.tipo-posto .led { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; }
+
+  /* ── Grid areas ── */
+  .area-rec   { grid-area: rec;   }
+  .area-centa { grid-area: centa; }
+  .area-bf    { grid-area: bf;    }
+  .area-bm    { grid-area: bm;    }
+  .area-corra { grid-area: corra; }
+  .area-posto { grid-area: posto; }
+  .area-corrb { grid-area: corrb; }
+  .area-l01   { grid-area: l01;   } .area-l02  { grid-area: l02;  }
+  .area-l03   { grid-area: l03;   } .area-l04  { grid-area: l04;  }
+  .area-l05   { grid-area: l05;   } .area-l06  { grid-area: l06;  }
+  .area-l07   { grid-area: l07;   } .area-l08  { grid-area: l08;  }
+  .area-l09   { grid-area: l09;   } .area-l10  { grid-area: l10;  }
+  .area-l11   { grid-area: l11;   } .area-l12  { grid-area: l12;  }
+  .area-l13   { grid-area: l13;   } .area-l14  { grid-area: l14;  }
+  .area-l15   { grid-area: l15;   } .area-l16  { grid-area: l16;  }
+  .area-l17   { grid-area: l17;   } .area-l18  { grid-area: l18;  }
+  .area-l19   { grid-area: l19;   } .area-l20  { grid-area: l20;  }
 
   /* ── AVISO ÁUDIO ── */
-  .aviso-audio {
-    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+  .aviso-audio { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
     background: var(--surface); border: 1px solid #f59e0b; color: #fbbf24;
-    font-size: .72rem; letter-spacing: 1px; padding: 8px 20px; border-radius: 20px;
-    cursor: pointer; animation: piscar 1.5s infinite; z-index: 999;
-  }
+    font-size: .7rem; letter-spacing: 1px; padding: 7px 18px; border-radius: 20px;
+    cursor: pointer; animation: piscar 1.5s infinite; z-index: 999; }
   .aviso-audio.oculto { display: none; }
 
-  /* ── LEGENDA ── */
-  .legenda {
-    position: fixed; bottom: 14px; right: 14px;
-    display: flex; gap: 10px; align-items: center;
-  }
-  .leg-item { display: flex; align-items: center; gap: 5px; font-size: .65rem; color: var(--muted); }
-  .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+  /* ── Legenda ── */
+  .legenda { position: fixed; bottom: 12px; right: 12px;
+    display: flex; gap: 10px; align-items: center; }
+  .leg-item { display: flex; align-items: center; gap: 5px;
+    font-size: .62rem; color: var(--muted); }
+  .leg-dot  { width: 9px; height: 9px; border-radius: 50%; }
 
-  /* ── CADASTRO ── */
-  #pg-cadastro { padding: 32px; gap: 24px; }
-  .cad-titulo { font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; }
-
-  .cad-form {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 16px;
-    max-width: 500px;
-  }
-  .cad-form label { font-size: .75rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  /* ════════════════════════════════════════════
+     CADASTRO
+  ════════════════════════════════════════════ */
+  #pg-cadastro { padding: 28px; gap: 20px; }
+  .cad-titulo  { font-size: .95rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; }
+  .cad-form    { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; display: flex; flex-direction: column;
+    gap: 14px; max-width: 480px; }
+  .cad-form label { font-size: .7rem; color: var(--muted); letter-spacing: 1px;
+    text-transform: uppercase; display: flex; flex-direction: column; gap: 5px; }
   .cad-form select, .cad-form input {
-    width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 6px; color: var(--text); font-size: .9rem;
-    outline: none; transition: border-color .2s;
-  }
+    width: 100%; padding: 9px 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); font-size: .85rem; outline: none; transition: border-color .2s; }
   .cad-form select:focus, .cad-form input:focus { border-color: #38bdf8; }
-  .cad-form button {
-    padding: 10px; background: #38bdf8; border: none; border-radius: 6px;
-    color: #000; font-weight: 700; font-size: .85rem; letter-spacing: 1px;
-    text-transform: uppercase; cursor: pointer; transition: opacity .2s;
-  }
+  .cad-form button { padding: 9px; background: #38bdf8; border: none; border-radius: 6px;
+    color: #000; font-weight: 700; font-size: .8rem; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; transition: opacity .2s; }
   .cad-form button:hover { opacity: .85; }
-
-  .cad-lista { flex: 1; overflow: auto; }
-  .cad-table { width: 100%; max-width: 700px; border-collapse: collapse; font-size: .8rem; }
-  .cad-table th {
-    text-align: left; padding: 8px 12px; color: var(--muted);
-    letter-spacing: 1px; text-transform: uppercase; font-size: .65rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .cad-table td { padding: 8px 12px; border-bottom: 1px solid #ffffff08; }
+  .cad-lista  { flex: 1; overflow: auto; }
+  .cad-table  { width: 100%; max-width: 680px; border-collapse: collapse; font-size: .78rem; }
+  .cad-table th { text-align: left; padding: 7px 12px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase; font-size: .62rem;
+    border-bottom: 1px solid var(--border); }
+  .cad-table td { padding: 7px 12px; border-bottom: 1px solid #ffffff08; }
   .cad-table tr:hover td { background: var(--surface); }
-  .cad-table .sem-paciente { color: #374151; font-style: italic; }
-  .btn-remover { background: transparent; border: 1px solid #7f1d1d; color: #f87171;
-    padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: .65rem; }
-  .btn-remover:hover { background: #7f1d1d44; }
+  .sem-pac { color: #374151; font-style: italic; }
+  .btn-rem { background: transparent; border: 1px solid #7f1d1d; color: #f87171;
+    padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: .62rem; }
+  .btn-rem:hover { background: #7f1d1d44; }
 
-  /* ── LOGS ── */
-  #pg-logs { padding: 20px; gap: 16px; }
+  /* ════════════════════════════════════════════
+     LOGS
+  ════════════════════════════════════════════ */
+  #pg-logs   { padding: 18px; gap: 14px; }
   .logs-topo { display: flex; align-items: center; justify-content: space-between; }
-  .logs-titulo { font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; }
-  .btn-limpar-log { background: transparent; border: 1px solid var(--border); color: var(--muted);
-    padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: .7rem; letter-spacing: 1px; }
-  .btn-limpar-log:hover { border-color: #8b949e; color: var(--text); }
-
+  .logs-titulo { font-size: .95rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; }
+  .btn-limpar { background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: .68rem; letter-spacing: 1px; }
+  .btn-limpar:hover { border-color: #8b949e; color: var(--text); }
   .log-lista { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; }
-
-  .log-item {
-    display: grid; grid-template-columns: 80px 140px 160px 1fr;
-    gap: 12px; align-items: center;
-    padding: 9px 14px; border-radius: 6px;
+  .log-item  { display: grid; grid-template-columns: 76px 160px 160px 1fr;
+    gap: 12px; align-items: center; padding: 8px 14px; border-radius: 6px;
     background: var(--surface); border-left: 3px solid var(--border);
-    font-size: .78rem; animation: entrar .3s ease;
-  }
-  @keyframes entrar { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-
+    font-size: .76rem; animation: entrar .3s ease; }
+  @keyframes entrar { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:none} }
   .log-item[data-tipo="chamada"]     { border-left-color: var(--chamada); }
   .log-item[data-tipo="atendimento"] { border-left-color: var(--atendimento); }
   .log-item[data-tipo="apoio"]       { border-left-color: var(--apoio); }
   .log-item[data-tipo="atendido"]    { border-left-color: var(--verde); }
-
-  .log-ts      { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .72rem; }
-  .log-room    { font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
-  .log-pac     { color: var(--muted); }
-  .log-evento  { font-weight: 500; }
-
-  .log-item[data-tipo="chamada"]     .log-evento { color: var(--chamada); }
-  .log-item[data-tipo="atendimento"] .log-evento { color: var(--atendimento); }
-  .log-item[data-tipo="apoio"]       .log-evento { color: var(--apoio); }
-  .log-item[data-tipo="atendido"]    .log-evento { color: var(--verde); }
+  .log-ts  { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .68rem; }
+  .log-room { font-weight: 600; text-transform: uppercase; font-size: .7rem; }
+  .log-pac  { color: var(--muted); }
+  .log-evento[data-tipo="chamada"]     { color: var(--chamada); font-weight: 600; }
+  .log-evento[data-tipo="atendimento"] { color: var(--atendimento); font-weight: 600; }
+  .log-evento[data-tipo="apoio"]       { color: var(--apoio); font-weight: 600; }
+  .log-evento[data-tipo="atendido"]    { color: var(--verde); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -247,7 +262,7 @@
   <div class="pulso" id="pulsoHeader"></div>
   <h1>Central de Enfermagem</h1>
   <div class="tabs">
-    <button class="tab-btn ativo" onclick="mudarTab('central',this)">Central</button>
+    <button class="tab-btn ativo" onclick="mudarTab('central',this)">Planta</button>
     <button class="tab-btn"       onclick="mudarTab('cadastro',this)">Cadastro</button>
     <button class="tab-btn"       onclick="mudarTab('logs',this)">Logs</button>
   </div>
@@ -257,69 +272,101 @@
   <div class="conn off" id="connBadge">Conectando…</div>
 </header>
 
-<!-- ── CENTRAL ── -->
+<!-- ══ PLANTA ══ -->
 <div class="pagina ativo" id="pg-central"></div>
 
-<!-- ── CADASTRO ── -->
+<!-- ══ CADASTRO ══ -->
 <div class="pagina" id="pg-cadastro">
   <div class="cad-titulo">Cadastro de Pacientes</div>
-
   <div class="cad-form">
-    <div>
-      <label>Quarto</label>
-      <select id="cadQuarto"></select>
-    </div>
-    <div>
-      <label>Nome do Paciente</label>
+    <label>Local / Leito
+      <select id="cadSala"></select>
+    </label>
+    <label>Nome do Paciente
       <input type="text" id="cadNome" placeholder="Ex: Maria Aparecida" maxlength="60">
-    </div>
+    </label>
     <button onclick="salvarPaciente()">Salvar</button>
   </div>
-
   <div class="cad-lista">
     <table class="cad-table">
-      <thead><tr><th>Quarto</th><th>Paciente</th><th></th></tr></thead>
+      <thead><tr><th>Local</th><th>Paciente</th><th></th></tr></thead>
       <tbody id="cadTabela"></tbody>
     </table>
   </div>
 </div>
 
-<!-- ── LOGS ── -->
+<!-- ══ LOGS ══ -->
 <div class="pagina" id="pg-logs">
   <div class="logs-topo">
     <span class="logs-titulo">Log de Eventos</span>
-    <button class="btn-limpar-log" onclick="limparLogsUI()">Limpar tela</button>
+    <button class="btn-limpar" onclick="document.getElementById('logLista').innerHTML=''">Limpar tela</button>
   </div>
   <div class="log-lista" id="logLista"></div>
 </div>
 
-<!-- Legenda de cores -->
+<!-- Legenda -->
 <div class="legenda" id="legendaEl">
   <div class="leg-item"><div class="leg-dot" style="background:var(--chamada)"></div>Enfermagem</div>
   <div class="leg-item"><div class="leg-dot" style="background:var(--atendimento)"></div>Atendimento</div>
   <div class="leg-item"><div class="leg-dot" style="background:var(--apoio)"></div>Apoio</div>
 </div>
 
-<div class="aviso-audio" id="avisoAudio" onclick="ativarAudio()">
-  🔇 Clique para ativar som de alerta
-</div>
+<div class="aviso-audio" id="avisoAudio" onclick="ativarAudio()">🔇 Clique para ativar som</div>
 
 <script>
-// ── Quartos ──────────────────────────────────────────────────────────────────
-const QUARTOS = Array.from({ length: 100 }, (_, i) => ({
-  id:   `quarto-${String(i + 1).padStart(2, '0')}`,
-  nome: `Quarto ${String(i + 1).padStart(2, '0')}`
-}));
+// ══ Definição das salas ═══════════════════════════════════════════════════════
+const SALAS = [
+  // Área de entrada
+  { id: 'recepcao',           nome: 'Recepção',           area: 'rec',   icon: '🏥', tipo: 'recepcao' },
+  { id: 'corredor-entrada',   nome: 'Corredor Entrada',   area: 'centa', icon: '🚶', tipo: 'corredor' },
+  { id: 'banheiro-feminino',  nome: 'Banheiro ♀',         area: 'bf',    icon: '🚺', tipo: 'banheiro' },
+  { id: 'banheiro-masculino', nome: 'Banheiro ♂',         area: 'bm',    icon: '🚹', tipo: 'banheiro' },
+  // Ala esquerda - superior
+  { id: 'leito-01', nome: 'Leito 01', area: 'l01', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-02', nome: 'Leito 02', area: 'l02', icon: '🛏️', tipo: 'leito' },
+  // Corredor central A
+  { id: 'corredor-a', nome: 'Corredor A', area: 'corra', icon: '🚶', tipo: 'corredor' },
+  // Ala direita - superior
+  { id: 'leito-03', nome: 'Leito 03', area: 'l03', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-04', nome: 'Leito 04', area: 'l04', icon: '🛏️', tipo: 'leito' },
+  // Ala esquerda - meio-superior
+  { id: 'leito-05', nome: 'Leito 05', area: 'l05', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-06', nome: 'Leito 06', area: 'l06', icon: '🛏️', tipo: 'leito' },
+  // Ala direita - meio-superior
+  { id: 'leito-07', nome: 'Leito 07', area: 'l07', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-08', nome: 'Leito 08', area: 'l08', icon: '🛏️', tipo: 'leito' },
+  // Ala esquerda - centro
+  { id: 'leito-09', nome: 'Leito 09', area: 'l09', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-10', nome: 'Leito 10', area: 'l10', icon: '🛏️', tipo: 'leito' },
+  // Posto de enfermagem (não interativo)
+  { id: 'posto-enfermagem', nome: 'Posto de Enfermagem', area: 'posto', icon: '👩‍⚕️', tipo: 'posto', readonly: true },
+  // Ala direita - centro
+  { id: 'leito-11', nome: 'Leito 11', area: 'l11', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-12', nome: 'Leito 12', area: 'l12', icon: '🛏️', tipo: 'leito' },
+  // Ala esquerda - inferior
+  { id: 'leito-13', nome: 'Leito 13', area: 'l13', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-14', nome: 'Leito 14', area: 'l14', icon: '🛏️', tipo: 'leito' },
+  // Corredor central B
+  { id: 'corredor-b', nome: 'Corredor B', area: 'corrb', icon: '🚶', tipo: 'corredor' },
+  // Ala direita - inferior
+  { id: 'leito-15', nome: 'Leito 15', area: 'l15', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-16', nome: 'Leito 16', area: 'l16', icon: '🛏️', tipo: 'leito' },
+  // Ala esquerda - fundo
+  { id: 'leito-17', nome: 'Leito 17', area: 'l17', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-18', nome: 'Leito 18', area: 'l18', icon: '🛏️', tipo: 'leito' },
+  // Ala direita - fundo
+  { id: 'leito-19', nome: 'Leito 19', area: 'l19', icon: '🛏️', tipo: 'leito' },
+  { id: 'leito-20', nome: 'Leito 20', area: 'l20', icon: '🛏️', tipo: 'leito' },
+];
 
-// ── Áudio ────────────────────────────────────────────────────────────────────
-let audioCtx = null;
-let audioOk  = false;
+// ══ Áudio ═════════════════════════════════════════════════════════════════════
+let audioCtx = null, audioOk = false;
 const sonsAtivos = {};
 
 function ativarAudio() {
   if (audioOk) return;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const buf = audioCtx.createBuffer(1, 1, 22050);
+  const buf = audioCtx.createBuffer(1,1,22050);
   const src = audioCtx.createBufferSource();
   src.buffer = buf; src.connect(audioCtx.destination); src.start(0);
   audioOk = true;
@@ -330,40 +377,32 @@ document.addEventListener('click',      ativarAudio, { once: true });
 document.addEventListener('touchstart', ativarAudio, { once: true });
 
 const SONS = {
-  chamada:     [[960, .12], [480, .23]],   // urgente, descendo
-  atendimento: [[600, .18], [520, .30]],   // suave, tom médio
-  apoio:       [[1100,.08], [900, .08], [1100,.08]], // rápido, agudo
+  chamada:     [[960,.12],[480,.23]],
+  atendimento: [[600,.18],[520,.30]],
+  apoio:       [[1100,.08],[900,.08],[1100,.08]],
 };
-
 function tocarBip(tipo) {
   if (!audioCtx || !audioOk) return;
   const passos = SONS[tipo] || SONS.chamada;
   let t = audioCtx.currentTime;
-  passos.forEach(([freq, dur]) => {
-    const osc  = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+  passos.forEach(([freq,dur]) => {
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
     osc.connect(gain); gain.connect(audioCtx.destination);
     osc.type = tipo === 'apoio' ? 'sine' : 'square';
     osc.frequency.setValueAtTime(freq, t);
-    gain.gain.setValueAtTime(.25, t);
-    gain.gain.exponentialRampToValueAtTime(.001, t + dur);
-    osc.start(t); osc.stop(t + dur);
-    t += dur;
+    gain.gain.setValueAtTime(.22, t);
+    gain.gain.exponentialRampToValueAtTime(.001, t+dur);
+    osc.start(t); osc.stop(t+dur); t += dur;
   });
 }
-
 function iniciarSom(id, tipo) {
   if (sonsAtivos[id]) return;
   tocarBip(tipo);
   sonsAtivos[id] = setInterval(() => tocarBip(tipo), 1200);
 }
+function pararSom(id) { clearInterval(sonsAtivos[id]); delete sonsAtivos[id]; }
 
-function pararSom(id) {
-  clearInterval(sonsAtivos[id]);
-  delete sonsAtivos[id];
-}
-
-// ── Tabs ─────────────────────────────────────────────────────────────────────
+// ══ Tabs ══════════════════════════════════════════════════════════════════════
 function mudarTab(nome, btn) {
   document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativo'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
@@ -372,43 +411,59 @@ function mudarTab(nome, btn) {
   document.getElementById('legendaEl').style.display = nome === 'central' ? '' : 'none';
 }
 
-// ── Montar grade ──────────────────────────────────────────────────────────────
-const grade = document.getElementById('pg-central');
-QUARTOS.forEach(q => {
+// ══ Montar planta ═════════════════════════════════════════════════════════════
+const planta = document.getElementById('pg-central');
+SALAS.forEach(s => {
   const card = document.createElement('div');
-  card.className = 'card';
-  card.id = 'card-' + q.id;
-  card.innerHTML = `
-    <div class="led"></div>
-    <div class="card-nome">${q.nome}</div>
-    <div class="card-paciente" id="cpac-${q.id}"></div>
-    <div class="card-tipo"     id="ctipo-${q.id}"></div>
-    <div class="card-hora"     id="chora-${q.id}"></div>
-    <button class="btn-atender" onclick="atender('${q.id}',event)">✔ Atender</button>
-  `;
-  grade.appendChild(card);
+  card.className = `card tipo-${s.tipo} area-${s.area}`;
+  card.id = 'card-' + s.id;
+
+  if (s.readonly) {
+    // Posto de enfermagem: não interativo
+    card.innerHTML = `
+      <div class="led"></div>
+      <div class="card-icone">${s.icon}</div>
+      <div class="card-nome">${s.nome}</div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="led"></div>
+      <div class="card-icone">${s.icon}</div>
+      <div class="card-nome">${s.nome}</div>
+      <div class="card-paciente" id="cpac-${s.id}"></div>
+      <div class="card-tipo"     id="ctipo-${s.id}"></div>
+      <div class="card-hora"     id="chora-${s.id}"></div>
+      <button class="btn-atender" onclick="atender('${s.id}',event)">✔ Atender</button>
+    `;
+    card.addEventListener('click', () => {/* clique visual apenas */});
+  }
+  planta.appendChild(card);
 });
 
-// ── Montar select de cadastro ─────────────────────────────────────────────────
-const cadQuarto = document.getElementById('cadQuarto');
-QUARTOS.forEach(q => {
+// ══ Montar select do cadastro ═════════════════════════════════════════════════
+const cadSala = document.getElementById('cadSala');
+SALAS.filter(s => !s.readonly).forEach(s => {
   const op = document.createElement('option');
-  op.value = q.id; op.textContent = q.nome;
-  cadQuarto.appendChild(op);
+  op.value = s.id; op.textContent = s.nome;
+  cadSala.appendChild(op);
 });
 
-// ── Alertas ───────────────────────────────────────────────────────────────────
+// ══ Alertas ═══════════════════════════════════════════════════════════════════
+const TIPO_LABEL = {
+  chamada:     '🔴 Chamou Enfermagem',
+  atendimento: '🟠 Atendimento',
+  apoio:       '🔵 Apoio',
+};
+
 function ativarAlerta(id, hora, tipo, paciente) {
   const card = document.getElementById('card-' + id);
-  if (!card) return;
+  if (!card || card.classList.contains('tipo-posto')) return;
   card.classList.add('alerta');
   card.dataset.tipo = tipo || 'chamada';
-
-  const TIPO_LABEL = { chamada: '🔴 Chamou Enfermagem', atendimento: '🟠 Atendimento', apoio: '🔵 Apoio' };
-  document.getElementById('ctipo-' + id).textContent = TIPO_LABEL[tipo] || tipo;
-  document.getElementById('chora-' + id).textContent = hora || '';
-  if (paciente) document.getElementById('cpac-' + id).textContent = paciente;
-
+  const el = n => document.getElementById(n + id);
+  if (el('ctipo-')) el('ctipo-').textContent = TIPO_LABEL[tipo] || tipo;
+  if (el('chora-')) el('chora-').textContent = hora || '';
+  if (el('cpac-') && paciente) el('cpac-').textContent = paciente;
   iniciarSom(id, tipo || 'chamada');
   atualizarContador();
 }
@@ -418,8 +473,9 @@ function desativarAlerta(id) {
   if (!card) return;
   card.classList.remove('alerta');
   delete card.dataset.tipo;
-  document.getElementById('ctipo-' + id).textContent = '';
-  document.getElementById('chora-' + id).textContent = '';
+  const el = n => document.getElementById(n + id);
+  if (el('ctipo-')) el('ctipo-').textContent = '';
+  if (el('chora-')) el('chora-').textContent = '';
   pararSom(id);
   atualizarContador();
 }
@@ -442,38 +498,33 @@ function atender(id, e) {
   desativarAlerta(id);
 }
 
-// ── Pacientes ─────────────────────────────────────────────────────────────────
+// ══ Pacientes ═════════════════════════════════════════════════════════════════
 const pacientesLocais = {};
 
 function atualizarPaciente(room, nome) {
-  if (nome) pacientesLocais[room] = nome;
-  else delete pacientesLocais[room];
-
-  // Atualiza card na grade
+  if (nome) pacientesLocais[room] = nome; else delete pacientesLocais[room];
   const el = document.getElementById('cpac-' + room);
   if (el) el.textContent = nome || '';
-
-  // Atualiza tabela do cadastro
   renderTabela();
 }
 
 function renderTabela() {
   const tbody = document.getElementById('cadTabela');
   tbody.innerHTML = '';
-  QUARTOS.forEach(q => {
+  SALAS.filter(s => !s.readonly).forEach(s => {
+    const nome = pacientesLocais[s.id] || '';
     const tr = document.createElement('tr');
-    const nome = pacientesLocais[q.id] || '';
     tr.innerHTML = `
-      <td>${q.nome}</td>
-      <td class="${nome ? '' : 'sem-paciente'}">${nome || '— sem paciente —'}</td>
-      <td>${nome ? `<button class="btn-remover" onclick="removerPaciente('${q.id}')">Remover</button>` : ''}</td>
+      <td>${s.nome}</td>
+      <td class="${nome ? '' : 'sem-pac'}">${nome || '— sem paciente —'}</td>
+      <td>${nome ? `<button class="btn-rem" onclick="removerPaciente('${s.id}')">Remover</button>` : ''}</td>
     `;
     tbody.appendChild(tr);
   });
 }
 
 function salvarPaciente() {
-  const room = document.getElementById('cadQuarto').value;
+  const room = document.getElementById('cadSala').value;
   const nome = document.getElementById('cadNome').value.trim();
   fetch('/api/paciente', { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -481,7 +532,6 @@ function salvarPaciente() {
   atualizarPaciente(room, nome);
   document.getElementById('cadNome').value = '';
 }
-
 function removerPaciente(room) {
   fetch('/api/paciente', { method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -489,98 +539,69 @@ function removerPaciente(room) {
   atualizarPaciente(room, '');
 }
 
-// ── Logs ─────────────────────────────────────────────────────────────────────
+// ══ Logs ══════════════════════════════════════════════════════════════════════
 function adicionarLog(entry) {
   const lista = document.getElementById('logLista');
+  const sala  = SALAS.find(s => s.id === entry.room);
   const div   = document.createElement('div');
-  div.className  = 'log-item';
+  div.className   = 'log-item';
   div.dataset.tipo = entry.tipo;
-
-  const nomeQuarto = QUARTOS.find(q => q.id === entry.room)?.nome || entry.room;
   div.innerHTML = `
     <span class="log-ts">${entry.ts}</span>
-    <span class="log-room">${nomeQuarto}</span>
+    <span class="log-room">${sala?.nome || entry.room}</span>
     <span class="log-pac">${entry.paciente || '—'}</span>
-    <span class="log-evento">${entry.evento}</span>
+    <span class="log-evento" data-tipo="${entry.tipo}">${entry.evento}</span>
   `;
   lista.prepend(div);
-  // Limita a 200 itens na tela
   while (lista.children.length > 200) lista.lastChild.remove();
 }
 
-function limparLogsUI() {
-  document.getElementById('logLista').innerHTML = '';
-}
-
-// ── Relógio ───────────────────────────────────────────────────────────────────
+// ══ Relógio ═══════════════════════════════════════════════════════════════════
 setInterval(() => {
-  document.getElementById('relogio').textContent =
-    new Date().toLocaleTimeString('pt-BR');
+  document.getElementById('relogio').textContent = new Date().toLocaleTimeString('pt-BR');
 }, 1000);
 
-// ── Polling HTTP ──────────────────────────────────────────────────────────────
+// ══ Polling HTTP ══════════════════════════════════════════════════════════════
 async function sincronizar() {
   try {
     const res  = await fetch('/api/status');
     const data = await res.json();
-    QUARTOS.forEach(q => {
-      const card  = document.getElementById('card-' + q.id);
-      const ativo = !!data[q.id];
+    SALAS.filter(s => !s.readonly).forEach(s => {
+      const card  = document.getElementById('card-' + s.id);
+      const ativo = !!data[s.id];
       const jaEsta = card.classList.contains('alerta');
-      if (ativo && !jaEsta) ativarAlerta(q.id, data[q.id].hora, data[q.id].tipo, data[q.id].paciente);
-      if (!ativo && jaEsta) desativarAlerta(q.id);
+      if (ativo && !jaEsta) ativarAlerta(s.id, data[s.id].hora, data[s.id].tipo, data[s.id].paciente);
+      if (!ativo && jaEsta) desativarAlerta(s.id);
     });
   } catch (_) {}
 }
 sincronizar();
 setInterval(sincronizar, 2000);
 
-// ── WebSocket ─────────────────────────────────────────────────────────────────
+// ══ WebSocket ═════════════════════════════════════════════════════════════════
 const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 let ws;
 
 function conectar() {
   ws = new WebSocket(WS_URL);
-
-  ws.onopen  = () => {
-    document.getElementById('connBadge').textContent = 'Conectado';
-    document.getElementById('connBadge').className   = 'conn ok';
-  };
-  ws.onclose = () => {
-    document.getElementById('connBadge').textContent = 'Polling ativo';
-    document.getElementById('connBadge').className   = 'conn off';
-    setTimeout(conectar, 3000);
-  };
+  ws.onopen  = () => { document.getElementById('connBadge').textContent = 'Conectado';
+    document.getElementById('connBadge').className = 'conn ok'; };
+  ws.onclose = () => { document.getElementById('connBadge').textContent = 'Polling ativo';
+    document.getElementById('connBadge').className = 'conn off'; setTimeout(conectar, 3000); };
   ws.onerror = () => ws.close();
 
   ws.onmessage = ({ data }) => {
     const msg = JSON.parse(data);
-
     if (msg.type === 'init') {
-      Object.values(msg.pacientes || {}).forEach(({ room, nome }) => {});
-      Object.entries(msg.pacientes || {}).forEach(([room, nome]) => atualizarPaciente(room, nome));
+      Object.entries(msg.pacientes || {}).forEach(([r,n]) => atualizarPaciente(r,n));
       Object.values(msg.alertas   || {}).forEach(a => ativarAlerta(a.room, a.hora, a.tipo, a.paciente));
       (msg.logs || []).slice().reverse().forEach(adicionarLog);
       renderTabela();
     }
-
-    if (msg.type === 'alerta') {
-      msg.ativo
-        ? ativarAlerta(msg.room, msg.hora, msg.tipo, msg.paciente)
-        : desativarAlerta(msg.room);
-    }
-
-    if (msg.type === 'atendido') {
-      desativarAlerta(msg.room);
-    }
-
-    if (msg.type === 'paciente') {
-      atualizarPaciente(msg.room, msg.nome);
-    }
-
-    if (msg.type === 'log') {
-      adicionarLog(msg.entry);
-    }
+    if (msg.type === 'alerta')   { msg.ativo ? ativarAlerta(msg.room, msg.hora, msg.tipo, msg.paciente) : desativarAlerta(msg.room); }
+    if (msg.type === 'atendido') { desativarAlerta(msg.room); }
+    if (msg.type === 'paciente') { atualizarPaciente(msg.room, msg.nome); }
+    if (msg.type === 'log')      { adicionarLog(msg.entry); }
   };
 }
 conectar();
