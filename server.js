@@ -20,6 +20,11 @@ function broadcast(data) {
   });
 }
 
+// ─── Rota para página individual de cada sala ─────────────────────────────────
+app.get('/sala/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'sala.html'));
+});
+
 // ─── API para os interruptores WiFi ───────────────────────────────────────────
 
 // Acionar chamado: POST /api/alert  body: { "room": "quarto-01" }
@@ -37,7 +42,7 @@ app.post('/api/alert', (req, res) => {
   res.json({ ok: true });
 });
 
-// Cancelar chamado (interruptor desligado): POST /api/clear  body: { "room": "quarto-01" }
+// Cancelar chamado: POST /api/clear  body: { "room": "quarto-01" }
 app.post('/api/clear', (req, res) => {
   const { room } = req.body;
   delete alertas[room];
@@ -51,16 +56,18 @@ app.get('/api/status', (req, res) => res.json(alertas));
 
 // ─── WebSocket ────────────────────────────────────────────────────────────────
 wss.on('connection', (ws) => {
-  // Envia estado atual para quem acabou de conectar
   ws.send(JSON.stringify({ type: 'init', alertas }));
 
   ws.on('message', (raw) => {
     try {
       const msg = JSON.parse(raw);
-      // Enfermeira confirma atendimento pela tela
+
       if (msg.type === 'atender') {
         delete alertas[msg.room];
+        // Avisa a tela de enfermagem para apagar o alerta
         broadcast({ type: 'alerta', room: msg.room, ativo: false });
+        // Avisa a página da sala que o enfermeiro está a caminho
+        broadcast({ type: 'atendido', room: msg.room });
         console.log(`[ATENDIDO] ${msg.room}`);
       }
     } catch (_) {}
