@@ -288,33 +288,45 @@ const quartos = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 // ── Áudio ────────────────────────────────────────────────────────────────────
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let audioCtx = null;
+let audioDesbloqueado = false;
 const sonsAtivos = {};
 
-// Desbloqueia o áudio no primeiro clique/toque na página
 function ativarAudio() {
-  audioCtx.resume().then(() => {
-    document.getElementById('avisoAudio').classList.add('oculto');
-  });
+  if (audioDesbloqueado) return;
+
+  // Cria o contexto DENTRO do gesto do usuário (única forma garantida)
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // Toca um buffer silencioso para "aquecer" o contexto — truque necessário em mobile/Chrome
+  const buffer = audioCtx.createBuffer(1, 1, 22050);
+  const src    = audioCtx.createBufferSource();
+  src.buffer   = buffer;
+  src.connect(audioCtx.destination);
+  src.start(0);
+
+  audioDesbloqueado = true;
+  document.getElementById('avisoAudio').classList.add('oculto');
+  // Toca um bip de confirmação para o usuário saber que o som está ativo
+  setTimeout(bip, 100);
 }
+
 document.addEventListener('click',      ativarAudio, { once: true });
 document.addEventListener('touchstart', ativarAudio, { once: true });
 
 function bip() {
-  // Garante que o contexto está ativo antes de tocar
-  audioCtx.resume().then(() => {
-    const osc  = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(960, audioCtx.currentTime);
-    osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.12);
-    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-    osc.start(audioCtx.currentTime);
-    osc.stop(audioCtx.currentTime + 0.35);
-  });
+  if (!audioCtx || !audioDesbloqueado) return;
+  const osc  = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(960, audioCtx.currentTime);
+  osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.12);
+  gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime + 0.35);
 }
 
 function iniciarSom(id) {
