@@ -382,7 +382,16 @@ function desativarAlerta(id) {
 
 function atender(id, e) {
   e.stopPropagation();
-  ws.send(JSON.stringify({ type: 'atender', room: id }));
+  // Tenta via WebSocket (tempo real), cai no HTTP se não estiver conectado
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'atender', room: id }));
+  } else {
+    fetch('/api/clear', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: id })
+    });
+  }
   desativarAlerta(id);
 }
 
@@ -404,7 +413,28 @@ function tick() {
 tick();
 setInterval(tick, 1000);
 
-// ── WebSocket ────────────────────────────────────────────────────────────────
+// ── Polling HTTP (fallback garantido mesmo sem WebSocket) ────────────────────
+async function sincronizar() {
+  try {
+    const res  = await fetch('/api/status');
+    const data = await res.json();
+
+    quartos.forEach(q => {
+      const card  = document.getElementById('card-' + q.id);
+      const ativo = !!data[q.id];
+      const jaEsta = card.classList.contains('alerta');
+
+      if (ativo && !jaEsta) ativarAlerta(q.id, data[q.id].hora);
+      if (!ativo && jaEsta) desativarAlerta(q.id);
+    });
+  } catch (_) {}
+}
+
+// Polling a cada 2 segundos — garante sincronia independente do WebSocket
+sincronizar();
+setInterval(sincronizar, 2000);
+
+// ── WebSocket (tempo real quando disponível) ─────────────────────────────────
 const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 let ws;
 
@@ -417,9 +447,9 @@ function conectar() {
   };
 
   ws.onclose = () => {
-    document.getElementById('connBadge').textContent = 'Sem conexão';
+    document.getElementById('connBadge').textContent = 'Polling ativo';
     document.getElementById('connBadge').className = 'conn-badge off';
-    setTimeout(conectar, 3000); // reconecta automaticamente
+    setTimeout(conectar, 3000);
   };
 
   ws.onerror = () => ws.close();
@@ -428,7 +458,6 @@ function conectar() {
     const msg = JSON.parse(data);
 
     if (msg.type === 'init') {
-      // Estado inicial ao conectar
       Object.values(msg.alertas).forEach(a => ativarAlerta(a.room, a.hora));
     }
 
