@@ -241,6 +241,25 @@
     border-color: #f59e0b;
     background: #2d1a00;
   }
+
+  /* ── Aviso de áudio bloqueado ── */
+  .aviso-audio {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1c2230;
+    border: 1px solid #f59e0b;
+    color: #fbbf24;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    animation: piscar 1.5s infinite;
+    z-index: 999;
+  }
+  .aviso-audio.oculto { display: none; }
 </style>
 </head>
 <body>
@@ -257,6 +276,10 @@
 
 <div class="grid" id="grid"></div>
 
+<div class="aviso-audio" id="avisoAudio" onclick="ativarAudio()">
+  🔇 Clique aqui para ativar o som de alerta
+</div>
+
 <script>
 // ── Definição dos 20 quartos ─────────────────────────────────────────────────
 const quartos = Array.from({ length: 20 }, (_, i) => ({
@@ -268,18 +291,30 @@ const quartos = Array.from({ length: 20 }, (_, i) => ({
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const sonsAtivos = {};
 
+// Desbloqueia o áudio no primeiro clique/toque na página
+function ativarAudio() {
+  audioCtx.resume().then(() => {
+    document.getElementById('avisoAudio').classList.add('oculto');
+  });
+}
+document.addEventListener('click',      ativarAudio, { once: true });
+document.addEventListener('touchstart', ativarAudio, { once: true });
+
 function bip() {
-  const osc  = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.type = 'square';
-  osc.frequency.setValueAtTime(960, audioCtx.currentTime);
-  osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-  osc.start(audioCtx.currentTime);
-  osc.stop(audioCtx.currentTime + 0.35);
+  // Garante que o contexto está ativo antes de tocar
+  audioCtx.resume().then(() => {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(960, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.35);
+  });
 }
 
 function iniciarSom(id) {
