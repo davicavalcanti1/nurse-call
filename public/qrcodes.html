@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerar QR Codes — Enfermagem</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d1117; color: #e6edf3;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    padding: 24px; min-height: 100vh;
+  }
+
+  h1 { font-size: 1rem; letter-spacing: 3px; text-transform: uppercase;
+    color: #38bdf8; margin-bottom: 4px; }
+  .sub { font-size: .75rem; color: #8b949e; margin-bottom: 24px; letter-spacing: 1px; }
+
+  /* ── Filtros ── */
+  .filtros {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+    margin-bottom: 28px; background: #161b22;
+    border: 1px solid #30363d; border-radius: 8px; padding: 16px;
+  }
+  .filtros label { font-size: .7rem; color: #8b949e; letter-spacing: 1px;
+    text-transform: uppercase; display: flex; flex-direction: column; gap: 6px; }
+  .filtros select, .filtros input[type=number] {
+    padding: 8px 12px; background: #0d1117; border: 1px solid #30363d;
+    border-radius: 6px; color: #e6edf3; font-size: .85rem; outline: none;
+    transition: border-color .2s; min-width: 160px;
+  }
+  .filtros select:focus, .filtros input:focus { border-color: #38bdf8; }
+
+  .tipos-check { display: flex; gap: 12px; align-items: center; margin-top: 4px; }
+  .tipo-label {
+    display: flex; align-items: center; gap: 6px; cursor: pointer;
+    font-size: .78rem; color: #e6edf3; text-transform: none; letter-spacing: 0;
+  }
+  .tipo-label input { accent-color: #38bdf8; width: 15px; height: 15px; cursor: pointer; }
+
+  .btn {
+    padding: 9px 20px; border: none; border-radius: 6px;
+    font-size: .75rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; cursor: pointer; transition: opacity .2s;
+  }
+  .btn-gerar   { background: #38bdf8; color: #000; }
+  .btn-imprimir { background: transparent; border: 1px solid #30363d; color: #e6edf3; }
+  .btn:hover { opacity: .85; }
+
+  /* ── Grade de QR codes ── */
+  .grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .qr-card {
+    background: #fff; border-radius: 10px;
+    padding: 16px; display: flex; flex-direction: column;
+    align-items: center; gap: 10px; color: #000;
+    break-inside: avoid;
+  }
+
+  .qr-card-topo {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+  }
+  .qr-quarto { font-size: .75rem; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; color: #111; }
+  .qr-badge {
+    font-size: .6rem; font-weight: 700; padding: 2px 8px;
+    border-radius: 10px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .badge-chamada     { background: #fee2e2; color: #991b1b; }
+  .badge-atendimento { background: #fef3c7; color: #92400e; }
+  .badge-apoio       { background: #dbeafe; color: #1e40af; }
+
+  .qr-img { width: 160px; height: 160px; }
+  .qr-url { font-size: .52rem; color: #6b7280; word-break: break-all; text-align: center; }
+  .qr-paciente { font-size: .65rem; font-weight: 600; color: #374151; min-height: 16px; }
+
+  .qr-instrucao {
+    font-size: .6rem; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb;
+    padding-top: 8px; width: 100%;
+  }
+
+  /* ── Impressão ── */
+  @media print {
+    body { background: #fff; color: #000; padding: 10px; }
+    .filtros, h1, .sub, .btn { display: none !important; }
+    .grade { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .qr-card { border: 1px solid #ddd; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Gerador de QR Codes</h1>
+<p class="sub">Imprima e cole no quarto — ao escanear, o chamado é disparado automaticamente</p>
+
+<div class="filtros">
+  <label>
+    Quarto
+    <select id="selQuarto">
+      <option value="todos">Todos os quartos</option>
+    </select>
+  </label>
+
+  <label>
+    Tipos de chamado
+    <div class="tipos-check">
+      <label class="tipo-label">
+        <input type="checkbox" value="chamada" checked> 🔴 Enfermagem
+      </label>
+      <label class="tipo-label">
+        <input type="checkbox" value="atendimento" checked> 🟠 Atendimento
+      </label>
+      <label class="tipo-label">
+        <input type="checkbox" value="apoio" checked> 🔵 Apoio
+      </label>
+    </div>
+  </label>
+
+  <div style="display:flex;gap:8px;align-self:flex-end">
+    <button class="btn btn-gerar"    onclick="gerar()">Gerar QR Codes</button>
+    <button class="btn btn-imprimir" onclick="window.print()">🖨️ Imprimir</button>
+  </div>
+</div>
+
+<div class="grade" id="grade"></div>
+
+<script>
+  const QUARTOS = Array.from({ length: 100 }, (_, i) => ({
+    id:   `quarto-${String(i + 1).padStart(2, '0')}`,
+    nome: `Quarto ${String(i + 1).padStart(2, '0')}`
+  }));
+
+  const TIPO_INFO = {
+    chamada:     { label: 'Enfermagem', badge: 'badge-chamada',     icone: '🔴' },
+    atendimento: { label: 'Atendimento', badge: 'badge-atendimento', icone: '🟠' },
+    apoio:       { label: 'Apoio',       badge: 'badge-apoio',       icone: '🔵' },
+  };
+
+  // Popula select de quartos
+  const sel = document.getElementById('selQuarto');
+  QUARTOS.forEach(q => {
+    const op = document.createElement('option');
+    op.value = q.id; op.textContent = q.nome;
+    sel.appendChild(op);
+  });
+
+  // Busca pacientes cadastrados
+  let pacientes = {};
+  fetch('/api/pacientes').then(r => r.json()).then(d => { pacientes = d; });
+
+  function gerar() {
+    const grade = document.getElementById('grade');
+    grade.innerHTML = '';
+
+    const quartoSel = document.getElementById('selQuarto').value;
+    const tipos     = [...document.querySelectorAll('.tipos-check input:checked')].map(i => i.value);
+
+    if (!tipos.length) { alert('Selecione pelo menos um tipo de chamado.'); return; }
+
+    const lista = quartoSel === 'todos' ? QUARTOS : QUARTOS.filter(q => q.id === quartoSel);
+
+    lista.forEach(q => {
+      tipos.forEach(tipo => {
+        const info = TIPO_INFO[tipo];
+        const url  = `${location.origin}/qr/${q.id}/${tipo}`;
+        const pac  = pacientes[q.id] || '';
+
+        const card = document.createElement('div');
+        card.className = 'qr-card';
+        card.innerHTML = `
+          <div class="qr-card-topo">
+            <span class="qr-quarto">${q.nome}</span>
+            <span class="qr-badge ${info.badge}">${info.icone} ${info.label}</span>
+          </div>
+          ${pac ? `<div class="qr-paciente">👤 ${pac}</div>` : '<div class="qr-paciente"></div>'}
+          <div class="qr-img" id="qr-${q.id}-${tipo}"></div>
+          <div class="qr-url">${url}</div>
+          <div class="qr-instrucao">📱 Escaneie para acionar o chamado</div>
+        `;
+        grade.appendChild(card);
+
+        // Gera o QR code
+        new QRCode(document.getElementById(`qr-${q.id}-${tipo}`), {
+          text:          url,
+          width:         160,
+          height:        160,
+          colorDark:     '#000000',
+          colorLight:    '#ffffff',
+          correctLevel:  QRCode.CorrectLevel.H
+        });
+      });
+    });
+  }
+
+  // Gera automaticamente ao carregar
+  gerar();
+</script>
+</body>
+</html>
